@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual Environment
+.venv/
+venv/
+
+# VS Code
+.vscode/
+
+# Streamlit Cache
+.streamlit/
+
+# Local Secrets
+.streamlit/secrets.toml
+
+# Processed Data
+data/processed/
+
+# Repository Data
+data/repository/
+
+# Excel Files
+*.xlsx
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
+.DS_Store

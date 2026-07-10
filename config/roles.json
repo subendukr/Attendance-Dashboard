@@ -1,0 +1,44 @@
+{
+  "Admin": {
+    "dashboard": true,
+    "analytics": true,
+    "employee_search": true,
+    "upload": true,
+    "repository": true
+  },
+  "Manager": {
+    "dashboard": true,
+    "analytics": true,
+    "employee_search": true,
+    "upload": false,
+    "repository": false
+  },
+  "MD": {
+    "dashboard": true,
+    "analytics": true,
+    "employee_search": true,
+    "upload": false,
+    "repository": false
+  },
+  "HR": {
+    "dashboard": true,
+    "analytics": true,
+    "employee_search": true,
+    "upload": false,
+    "repository": false
+  },
+  "GM": {
+    "dashboard": true,
+    "analytics": true,
+    "employee_search": true,
+    "upload": false,
+    "repository": false
+  },
+  "Director": {
+    "dashboard": true,
+    "analytics": true,
+    "employee_search": true,
+    "upload": false,
+    "repository": false
+  }
+}

@@ -1,0 +1,24 @@
+{
+    "companies": {
+        "NLKL": {
+            "code": "NLKL",
+            "name": "Neelkamal",
+            "full_name": "Neelkamal Steels Pvt. Ltd."
+        },
+        "GOV": {
+            "code": "GOV",
+            "name": "Govardhan",
+            "full_name": "Govardhan ISPAT"
+        },
+        "KAAL": {
+            "code": "KAAL",
+            "name": "Kalindi",
+            "full_name": "Kalindi Ventures"
+        },
+        "RKL": {
+            "code": "RKL",
+            "name": "Ramkripal",
+            "full_name": "Ramkripal Steels Pvt. Ltd."
+        }
+    }
+}

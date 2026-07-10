@@ -1,0 +1,340 @@
+/* ==========================================================
+   GLOBAL APP
+========================================================== */
+
+.stApp {
+
+    background-color: #0E1117;
+
+    color: #F8FAFC;
+
+    font-family: "Segoe UI", sans-serif;
+
+}
+
+
+/* ==========================================================
+   SIDEBAR
+========================================================== */
+
+section[data-testid="stSidebar"] {
+
+    background-color: #111827 !important;
+
+    border-right: 1px solid #374151;
+
+}
+
+section[data-testid="stSidebar"] * {
+
+    color: #F8FAFC !important;
+
+}
+
+
+/* Sidebar Title */
+
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 {
+
+    color: #FFFFFF !important;
+
+    font-weight: 700;
+
+}
+
+
+/* Sidebar Text */
+
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] span {
+
+    color: #E5E7EB !important;
+
+}
+
+
+/* Divider */
+
+section[data-testid="stSidebar"] hr {
+
+    border-color: #374151;
+
+}
+
+
+/* ==========================================================
+   SELECTBOXES / MULTISELECT
+========================================================== */
+
+div[data-baseweb="select"]>div {
+
+    background-color: #1F2937 !important;
+
+    color: white !important;
+
+    border: 1px solid #374151 !important;
+
+    border-radius: 10px;
+
+}
+
+
+/* ==========================================================
+   TEXT INPUT
+========================================================== */
+
+.stTextInput input {
+
+    background-color: #1F2937;
+
+    color: white;
+
+    border-radius: 10px;
+
+    border: 1px solid #374151;
+
+}
+
+
+/* ==========================================================
+   METRIC CARDS
+========================================================== */
+
+div[data-testid="metric-container"] {
+
+    background-color: #1F2937;
+
+    border: 1px solid #374151;
+
+    border-radius: 12px;
+
+    padding: 15px;
+
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.25);
+
+}
+
+
+/* Metric Labels */
+
+div[data-testid="metric-container"] label {
+
+    color: #2278e1 !important;
+
+}
+
+
+/* Metric Values */
+
+div[data-testid="metric-container"] [data-testid="stMetricValue"] {
+
+    color: #38BDF8 !important;
+
+    font-weight: 700;
+
+}
+
+
+/* ==========================================================
+   BUTTONS
+========================================================== */
+
+.stButton button,
+.stDownloadButton button {
+
+    width: 100%;
+
+    border-radius: 10px;
+
+    border: none;
+
+    background-color: #2563EB;
+
+    color: white;
+
+    font-weight: 600;
+
+    transition: 0.25s;
+
+}
+
+.stButton button:hover,
+.stDownloadButton button:hover {
+
+    background-color: #1D4ED8;
+
+}
+
+
+/* ==========================================================
+   DATAFRAMES
+========================================================== */
+
+div[data-testid="stDataFrame"] {
+
+    border: 1px solid #374151;
+
+    border-radius: 10px;
+
+}
+
+
+/* ==========================================================
+   CONTAINERS
+========================================================== */
+
+div[data-testid="stVerticalBlockBorderWrapper"] {
+
+    border-radius: 12px;
+
+}
+
+
+/* ==========================================================
+   INFO / SUCCESS / WARNING
+========================================================== */
+
+div[data-baseweb="notification"] {
+
+    border-radius: 10px;
+
+}
+
+
+/* ==========================================================
+   PLOTLY CHARTS
+========================================================== */
+
+.js-plotly-plot {
+
+    border-radius: 12px;
+
+}
+
+
+/* ==========================================================
+   HEADERS
+========================================================== */
+
+h1 {
+
+    color: #1E3A8A;
+
+    font-weight: 700;
+
+}
+
+h2 {
+
+    color: #2563EB;
+
+}
+
+h3 {
+
+    color: #CBD5E1;
+
+}
+
+
+/* ==========================================================
+   CAPTIONS
+========================================================== */
+
+div[data-testid="stCaptionContainer"] {
+
+    color: #94A3B8;
+
+}
+
+
+/* ==========================================================
+   EXPANDERS
+========================================================== */
+
+details {
+
+    border-radius: 10px;
+
+}
+
+
+/* ==========================================================
+   SCROLLBAR
+========================================================== */
+
+::-webkit-scrollbar {
+
+    width: 10px;
+
+}
+
+::-webkit-scrollbar-track {
+
+    background: #111827;
+
+}
+
+::-webkit-scrollbar-thumb {
+
+    background: #475569;
+
+    border-radius: 10px;
+
+}
+
+::-webkit-scrollbar-thumb:hover {
+
+    background: #64748B;
+
+}
+
+/* ==========================================================
+   RESPONSIVE DESIGN (MOBILE & TABLET)
+========================================================== */
+
+@media (max-width: 768px) {
+
+    /* Reduce block padding so content fits better */
+    .block-container {
+        padding-top: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    /* Make headers slightly smaller */
+    h1 {
+        font-size: 1.5rem !important;
+    }
+
+    h2 {
+        font-size: 1.2rem !important;
+    }
+
+    h3 {
+        font-size: 1.1rem !important;
+    }
+
+    /* Adjust metric card spacing and padding */
+    div[data-testid="metric-container"] {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    div[data-testid="metric-container"] label {
+        font-size: 0.85rem !important;
+    }
+
+    div[data-testid="metric-container"] [data-testid="stMetricValue"] {
+        font-size: 1.25rem !important;
+    }
+
+    /* Ensure flex containers wrap gracefully */
+    div[data-testid="stHorizontalBlock"] {
+        flex-wrap: wrap !important;
+    }
+}
