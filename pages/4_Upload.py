@@ -1,8 +1,8 @@
 import streamlit as st
 
 from utils.validation import validate_file
-from utils.parser import process_reports
 from utils.company_detector import detect_company
+from services.upload_service import upload_service
 
 from utils.repository import (
     ensure_repository,
@@ -16,6 +16,7 @@ from utils.repository import (
     remove_metadata,
     rebuild_repository,
 )
+from services.attendance_service import attendance_service
 
 from auth.layout import render_header
 
@@ -50,6 +51,7 @@ MONTH_ORDER = [
 render_header(title="Neelkamal Steel Industry", subtitle="Attendance Analytics")
 
 ensure_repository()
+attendance_service.ensure_ready()
 
 # ==========================================================
 # LOAD REPOSITORY
@@ -228,7 +230,7 @@ Invalid Workbooks : {len(invalid_files)}
     st.markdown("### ⚙️ Repository Processing")
 
     with st.spinner("Processing attendance workbooks..."):
-        daily, monthly, summary = process_reports(valid_files)
+        daily, monthly, summary = upload_service.process_workbooks(valid_files)
 
     # ==========================================================
     # UPDATE PROCESSING METADATA
@@ -371,7 +373,7 @@ st.divider()
 
 if st.button("🔄 Rebuild Repository", width="stretch"):
     with st.spinner("Rebuilding repository..."):
-        daily, monthly, summary = rebuild_repository()
+        daily, monthly, summary = upload_service.rebuild_repository()
 
         for workbook in summary:
             update_metadata(
