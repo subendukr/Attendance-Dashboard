@@ -1,2 +1,1 @@
-Filename,UploadedOn,FileSizeKB,Status,Employees,Departments,DailyRecords,MonthlyRecords
-MnPerformance_1 JUNE NLKL.xlsx,2026-07-10 12:49:23,475.34,Imported,267.0,9.0,8010.0,267.0
+Company,CompanyCode,Filename,UploadedOn,Month,Year,FileSizeKB,Status,Employees,Departments,DailyRecords,MonthlyRecords

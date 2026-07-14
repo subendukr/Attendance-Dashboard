@@ -462,43 +462,25 @@ def extract_monthly(filepath):
 
 
 def save_processed(daily, monthly):
-    """
-    Save processed datasets into
-    data/processed.
+    """Save processed datasets using the repository-backed storage layer."""
 
-    Files created
+    from utils.repository import repo
 
-        EmployeeDaily.xlsx
-
-        EmployeeMonthly.xlsx
-    """
-
-    output = Path("data/processed")
-
-    output.mkdir(parents=True, exist_ok=True)
+    output = repo.storage.ensure_directory("processed")
 
     daily_file = output / "EmployeeDaily.xlsx"
-
     monthly_file = output / "EmployeeMonthly.xlsx"
 
     daily.to_excel(daily_file, index=False)
-
     monthly.to_excel(monthly_file, index=False)
 
     print()
-
     print("=" * 60)
-
     print("Processed datasets saved successfully")
-
     print("-" * 60)
-
     print(f"Daily Dataset   : {daily_file}")
-
     print(f"Monthly Dataset : {monthly_file}")
-
     print("=" * 60)
-
     print()
 
     return (daily_file, monthly_file)

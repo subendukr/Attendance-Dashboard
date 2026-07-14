@@ -1,5 +1,4 @@
 import pandas as pd
-from pathlib import Path
 
 
 # ==========================================================
@@ -8,8 +7,9 @@ from pathlib import Path
 
 
 def load_monthly():
+    from utils.repository import repo
 
-    file = Path("data/processed/EmployeeMonthly.xlsx")
+    file = repo.storage.resolve("processed", "EmployeeMonthly.xlsx")
 
     if not file.exists():
         raise FileNotFoundError(
@@ -26,8 +26,9 @@ def load_monthly():
 
 
 def load_daily():
+    from utils.repository import repo
 
-    file = Path("data/processed/EmployeeDaily.xlsx")
+    file = repo.storage.resolve("processed", "EmployeeDaily.xlsx")
 
     if not file.exists():
         raise FileNotFoundError(

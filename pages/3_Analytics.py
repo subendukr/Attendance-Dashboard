@@ -14,9 +14,8 @@ from analytics.attendance import monthly_attendance_trend
 # DATA
 # ==========================================================
 
-from utils.data_access import load_monthly_data, load_daily_data
-
 from utils.filters import filter_monthly, filter_daily
+from services.attendance_service import attendance_service
 
 from utils.metrics import dashboard_metrics
 
@@ -61,9 +60,8 @@ require_login()
 
 render_header(title="Neelkamal Steel Industry", subtitle="Attendance Analytics")
 
-monthly = load_monthly_data()
-
-daily = load_daily_data()
+monthly = attendance_service.get_monthly_data()
+daily = attendance_service.get_daily_data()
 
 from utils.ui_filters import render_sidebar_filters
 

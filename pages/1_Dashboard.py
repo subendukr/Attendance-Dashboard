@@ -1,9 +1,9 @@
 import streamlit as st
 from auth.layout import render_header
-from utils.data_access import load_monthly_data
 from utils.filters import filter_monthly
 from utils.metrics import dashboard_metrics
 from auth.permissions import require_login
+from services.attendance_service import attendance_service
 
 from utils.charts.attendance import (
     attendance_summary_chart,
@@ -24,7 +24,7 @@ render_header(
     title="Neelkamal Steel Industry", subtitle="Employee Attendance Dashboard"
 )
 
-monthly = load_monthly_data()
+monthly = attendance_service.get_monthly_data()
 
 from utils.ui_filters import render_sidebar_filters
 
