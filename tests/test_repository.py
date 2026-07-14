@@ -59,16 +59,22 @@ def test_create_storage_uses_environment_configuration(monkeypatch, tmp_path):
     assert storage.root == tmp_path
 
 
+import pytest
+
+from utils.storage import (
+    StorageConfigurationError,
+    SupabaseStorage,
+)
+
 def test_supabase_storage_requires_credentials(monkeypatch):
     monkeypatch.delenv("SUPABASE_URL", raising=False)
     monkeypatch.delenv("SUPABASE_KEY", raising=False)
 
-    try:
+    with pytest.raises(
+        StorageConfigurationError,
+        match="SUPABASE_URL is missing",
+    ):
         SupabaseStorage(root=".")
-    except ValueError as exc:
-        assert "configured" in str(exc)
-    else:
-        raise AssertionError("SupabaseStorage should require credentials")
 
 
 def test_migrate_local_files_to_storage(tmp_path):
