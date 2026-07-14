@@ -342,6 +342,9 @@ class SupabaseStorage(StorageAdapter):
         content,
         overwrite=True,
     ):
+        if isinstance(content, memoryview):
+            content = content.tobytes()
+
         try:
             options = None
 

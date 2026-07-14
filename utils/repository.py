@@ -399,37 +399,20 @@ class AttendanceRepository:
             f"{self.RAW_FOLDER}/{filename}"
         )
 
-    def save_raw_workbook(
-        self,
-        uploaded_file,
-    ):
+    def save_raw_workbook(self,uploaded_file,):
         """
         Store an uploaded workbook in the repository.
         """
 
-        destination = (
-            f"{self.RAW_FOLDER}/"
-            f"{uploaded_file.name}"
-        )
+        destination = (f"{self.RAW_FOLDER}/"f"{uploaded_file.name}")
 
-        logger.info(
-            "Saving workbook %s",
-            uploaded_file.name,
-        )
+        logger.info("Saving workbook %s",uploaded_file.name)
 
-        self.storage.write_bytes(
-            destination,
-            uploaded_file.getbuffer(),
-        )
+        self.storage.write_bytes(destination,uploaded_file.getvalue())
 
-        return self.storage.resolve(
-            destination,
-        )
+        return self.storage.resolve(destination)
 
-    def copy_workbook(
-        self,
-        source,
-    ):
+    def copy_workbook(self,source):
         """
         Copy an existing workbook into the repository.
 

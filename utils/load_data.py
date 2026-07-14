@@ -9,15 +9,15 @@ import pandas as pd
 def load_monthly():
     from utils.repository import repo
 
-    file = repo.storage.resolve("processed", "EmployeeMonthly.xlsx")
+    relative_path = "processed/EmployeeMonthly.xlsx"
 
-    if not file.exists():
+    if not repo.storage.exists(relative_path):
         raise FileNotFoundError(
-            f"Processed file not found:\n{file}\n\n"
+            "Processed monthly dataset not found.\n\n"
             "Please upload and process an attendance report first."
         )
 
-    return pd.read_excel(file)
+    return repo.storage.load_dataframe(relative_path)
 
 
 # ==========================================================
@@ -28,15 +28,15 @@ def load_monthly():
 def load_daily():
     from utils.repository import repo
 
-    file = repo.storage.resolve("processed", "EmployeeDaily.xlsx")
+    relative_path = "processed/EmployeeDaily.xlsx"
 
-    if not file.exists():
+    if not repo.storage.exists(relative_path):
         raise FileNotFoundError(
-            f"Processed file not found:\n{file}\n\n"
+            "Processed daily dataset not found.\n\n"
             "Please upload and process an attendance report first."
         )
 
-    df = pd.read_excel(file)
+    df = repo.storage.load_dataframe(relative_path)
 
     df["Date"] = pd.to_datetime(df["Date"])
 
