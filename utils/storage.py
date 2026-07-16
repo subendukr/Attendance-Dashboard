@@ -161,7 +161,7 @@ class LocalStorage(StorageAdapter):
     repository while keeping all filesystem logic isolated.
     """
 
-    _init__(self, root: Optional[Union[str, Path]] = None):
+    def __init__(self, root: Optional[Union[str, Path]] = None):
         self.root = Path(root) if root else Path.cwd()
 
         logger.info(
