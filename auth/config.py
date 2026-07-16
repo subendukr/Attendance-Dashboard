@@ -1,116 +1,48 @@
-"""
-Authentication Configuration
-
-Loads role definitions and permissions from
-config/roles.json.
-
-This module is responsible only for role and
-permission management.
-"""
-
-from pathlib import Path
-import json
-
-
-# ==========================================================
-# CONFIG PATH
-# ==========================================================
-
-CONFIG_FOLDER = Path("config")
-
-ROLES_FILE = CONFIG_FOLDER / "roles.json"
-
-
-# ==========================================================
-# LOAD ROLE CONFIGURATION
-# ==========================================================
+from utils.repository import (
+    load_roles as repository_load_roles,
+    save_roles as repository_save_roles,
+)
 
 
 def load_roles():
     """
-    Load role definitions from roles.json.
-
-    Returns
-    -------
-    dict
-        Dictionary containing all role permissions.
+    Load role definitions from the repository.
     """
-
-    if not ROLES_FILE.exists():
-        raise FileNotFoundError(f"Role configuration not found:\n{ROLES_FILE}")
-
-    with open(ROLES_FILE, "r", encoding="utf-8") as file:
-        return json.load(file)
+    return repository_load_roles()
 
 
-# ==========================================================
-# GET ALL ROLES
-# ==========================================================
+def save_roles(roles):
+    """
+    Persist role definitions through the repository.
+    """
+    return repository_save_roles(roles)
 
 
 def get_roles():
     """
     Return a list of available roles.
     """
-
     return list(load_roles().keys())
-
-
-# ==========================================================
-# ROLE EXISTS
-# ==========================================================
 
 
 def role_exists(role):
     """
     Check whether a role exists.
     """
-
     return role in load_roles()
-
-
-# ==========================================================
-# GET ROLE PERMISSIONS
-# ==========================================================
 
 
 def get_permissions(role):
     """
-    Return permission dictionary
-    for the specified role.
-
-    Parameters
-    ----------
-    role : str
-
-    Returns
-    -------
-    dict
+    Return permission dictionary for the specified role.
     """
-
     roles = load_roles()
-
     return roles.get(role, {})
-
-
-# ==========================================================
-# CHECK PERMISSION
-# ==========================================================
 
 
 def has_permission(role, permission):
     """
-    Check whether a role has a
-    particular permission.
-
-    Example
-    -------
-    has_permission(
-        "Admin",
-        "upload"
-    )
+    Check whether a role has a particular permission.
     """
-
     permissions = get_permissions(role)
-
     return permissions.get(permission, False)

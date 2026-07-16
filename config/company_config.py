@@ -5,16 +5,10 @@ Loads company definitions from companies.json
 and provides helper functions for the application.
 """
 
-from pathlib import Path
-import json
-
-
-# ==========================================================
-# CONFIG FILE
-# ==========================================================
-
-COMPANY_FILE = Path("config/companies.json")
-
+from utils.repository import (
+    load_companies as repository_load_companies,
+    save_companies as repository_save_companies,
+)
 
 # ==========================================================
 # LOAD CONFIGURATION
@@ -23,13 +17,12 @@ COMPANY_FILE = Path("config/companies.json")
 
 def load_companies():
 
-    if not COMPANY_FILE.exists():
-        raise FileNotFoundError(f"{COMPANY_FILE} not found.")
+    data = repository_load_companies()
 
-    with open(COMPANY_FILE, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    return data["companies"]
+    return data.get(
+        "companies",
+        {},
+    )
 
 
 # ==========================================================
@@ -69,3 +62,15 @@ def company_name(code):
         return details["name"]
 
     return None
+
+# ==========================================================
+# SAVE COMPANY NAME
+# ==========================================================
+
+def save_companies(companies):
+
+    repository_save_companies(
+        {
+            "companies": companies,
+        }
+    )

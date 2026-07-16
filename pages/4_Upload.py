@@ -14,7 +14,6 @@ from utils.repository import (
     load_metadata,
     delete_workbook,
     remove_metadata,
-    rebuild_repository,
 )
 from services.attendance_service import attendance_service
 

@@ -42,6 +42,10 @@ class AttendanceRepository:
     PROCESSED_FOLDER = "processed"
     METADATA_FOLDER = "metadata"
 
+    USERS_FILE = "users.csv"
+    ROLES_FILE = "roles.json"
+    COMPANIES_FILE = "companies.json"
+
     METADATA_FILE = "metadata/upload_history.csv"
 
     # ------------------------------------------------------------------
@@ -142,6 +146,176 @@ class AttendanceRepository:
         self.storage.save_csv(
             metadata,
             self.METADATA_FILE,
+        )
+
+    # ------------------------------------------------------------------
+    # User management
+    # ------------------------------------------------------------------
+
+    def load_users(self) -> pd.DataFrame:
+        """
+        Load repository user data.
+        """
+
+        if not self.storage.exists(self.USERS_FILE):
+            logger.debug("Users file not found: %s", self.USERS_FILE)
+            return pd.DataFrame(
+                columns=[
+                    "Username",
+                    "Password",
+                    "Role",
+                    "Name",
+                    "Active",
+                ]
+            )
+
+        logger.debug("Loading repository users.")
+
+        users = self.storage.load_csv(self.USERS_FILE)
+
+        if "Active" in users.columns:
+            users["Active"] = (
+                users["Active"]
+                .astype(str)
+                .str.upper()
+                .eq("TRUE")
+            )
+
+        return users
+
+    def save_users(
+            self,
+            users: pd.DataFrame
+        ) -> str:
+        """
+        Persist repository user data.
+        """
+
+        logger.debug(
+            "Saving repository users (%d rows).",
+            len(users),
+        )
+
+        return self.storage.save_csv(
+            users,
+            self.USERS_FILE,
+        )
+    
+    # ------------------------------------------------------------------
+    # Role management
+    # ------------------------------------------------------------------
+
+    def load_roles(self)-> dict:
+        """
+        Load repository role definitions.
+
+        Returns
+        -------
+        dict
+            Dictionary containing all role definitions.
+        """
+
+        if not self.storage.exists(self.ROLES_FILE):
+
+            logger.debug(
+                "Roles file not found: %s",
+                self.ROLES_FILE,
+            )
+
+            return {}
+
+        logger.debug(
+            "Loading repository roles."
+        )
+
+        return self.storage.load_json(
+            self.ROLES_FILE,
+        )
+
+    def save_roles(
+        self,
+        roles: dict,
+    ):
+        """
+        Persist repository role definitions.
+
+        Parameters
+        ----------
+        roles
+            Dictionary containing all role definitions.
+
+        Returns
+        -------
+        str
+            Storage location of the saved JSON file.
+        """
+
+        logger.debug(
+            "Saving repository roles."
+        )
+
+        return self.storage.save_json(
+            roles,
+            self.ROLES_FILE,
+        )
+
+    # ------------------------------------------------------------------
+    # Company Management
+    # ------------------------------------------------------------------
+    def load_companies(self) -> dict:
+        """
+        Load repository company configuration.
+
+        Returns
+        -------
+        dict
+            Dictionary containing the complete company configuration.
+        """
+
+        if not self.storage.exists(self.COMPANIES_FILE):
+
+            logger.debug(
+                "Companies file not found: %s",
+                self.COMPANIES_FILE,
+            )
+
+            return {}
+
+        logger.debug(
+            "Loading repository companies."
+        )
+
+        return self.storage.load_json(
+            self.COMPANIES_FILE,
+        )
+
+
+    def save_companies(
+        self,
+        companies: dict,
+    ):
+        """
+        Persist repository company configuration.
+
+        Parameters
+        ----------
+        companies
+            Complete company configuration dictionary.
+
+        Returns
+        -------
+        str
+            Storage location of the saved JSON file.
+        """
+
+        logger.debug(
+            "Saving repository companies (%d companies).",
+            len(companies.get("companies", {})),
+        )
+
+        return self.storage.save_json(
+            companies,
+            self.COMPANIES_FILE,
         )
     # ------------------------------------------------------------------
     # Metadata operations
@@ -412,6 +586,165 @@ class AttendanceRepository:
 
         return self.storage.resolve(destination)
 
+    def save_processed_data(self,daily,monthly):
+
+        logger.info(
+            "Daily rows: %d | Monthly rows: %d",
+            len(daily),
+            len(monthly),
+        )
+
+        self.storage.save_dataframe(
+            daily,
+            f"{self.PROCESSED_FOLDER}/EmployeeDaily.xlsx",
+        )
+
+        logger.info("EmployeeDaily.xlsx saved")
+
+        self.storage.save_dataframe(
+            monthly,
+            f"{self.PROCESSED_FOLDER}/EmployeeMonthly.xlsx",
+        )
+
+        logger.info("EmployeeMonthly.xlsx saved")
+
+    def processed_exists(self) -> bool:
+        """
+        Check whether the processed attendance datasets exist.
+
+        The repository defines what constitutes a "processed repository".
+        Currently, both EmployeeDaily.xlsx and EmployeeMonthly.xlsx
+        must exist.
+
+        Returns
+        -------
+        bool
+            True if both processed datasets exist.
+        """
+
+        return (
+            self.storage.exists(
+                f"{self.PROCESSED_FOLDER}/EmployeeDaily.xlsx"
+            )
+            and
+            self.storage.exists(
+                f"{self.PROCESSED_FOLDER}/EmployeeMonthly.xlsx"
+            )
+        )
+
+    def load_daily(self) -> pd.DataFrame:
+        """
+        Load the processed daily attendance dataset.
+
+        Returns
+        -------
+        pandas.DataFrame
+            Daily attendance dataset with normalized columns.
+
+        Raises
+        ------
+        FileNotFoundError
+            If the processed dataset does not exist.
+        """
+
+        relative_path = (
+            f"{self.PROCESSED_FOLDER}/EmployeeDaily.xlsx"
+        )
+
+        if not self.storage.exists(relative_path):
+
+            raise FileNotFoundError(
+                "Processed daily dataset not found.\n\n"
+                "Please upload and process an attendance report first."
+            )
+
+        logger.debug(
+            "Loading processed daily dataset."
+        )
+
+        dataframe = self.storage.load_dataframe(
+            relative_path,
+        )
+
+        # --------------------------------------------------
+        # Normalization
+        # --------------------------------------------------
+
+        if (
+            "Date" in dataframe.columns
+            and not pd.api.types.is_datetime64_any_dtype(
+                dataframe["Date"]
+            )
+        ):
+            dataframe["Date"] = pd.to_datetime(
+                dataframe["Date"],
+                errors="coerce",
+            )
+
+        return dataframe
+
+    def load_monthly(self) -> pd.DataFrame:
+        """
+        Load the processed monthly attendance dataset.
+
+        Returns
+        -------
+        pandas.DataFrame
+            Monthly attendance dataset.
+
+        Raises
+        ------
+        FileNotFoundError
+            If the processed dataset does not exist.
+        """
+
+        relative_path = (
+            f"{self.PROCESSED_FOLDER}/EmployeeMonthly.xlsx"
+        )
+
+        if not self.storage.exists(relative_path):
+
+            raise FileNotFoundError(
+                "Processed monthly dataset not found.\n\n"
+                "Please upload and process an attendance report first."
+            )
+
+        logger.debug(
+            "Loading processed monthly dataset."
+        )
+
+        dataframe = self.storage.load_dataframe(
+            relative_path,
+        )
+
+        # --------------------------------------------------
+        # Future normalization can be added here
+        # --------------------------------------------------
+
+        return dataframe
+    
+    def processed_last_updated(self):
+        """
+        Return the last modified timestamp of the processed datasets.
+
+        Returns
+        -------
+        datetime | None
+            Last modified time of the processed repository,
+            or None if no processed data exists.
+        """
+
+        if not self.processed_exists():
+            return None
+
+        file_path = self.storage.resolve(
+            f"{self.PROCESSED_FOLDER}/EmployeeMonthly.xlsx"
+        )
+
+        return datetime.fromtimestamp(
+            file_path.stat().st_mtime
+        )
+
     def copy_workbook(self,source):
         """
         Copy an existing workbook into the repository.
@@ -556,21 +889,16 @@ class AttendanceRepository:
             len(repository),
         )
 
-        daily, monthly, summary = (
-            process_reports(
-                repository,
-            )
-        )
+        daily, monthly, summary = process_reports(repository)
+
+        self.save_processed_data(daily,monthly)
 
         logger.info(
             "Repository rebuild completed."
         )
 
-        return (
-            daily,
-            monthly,
-            summary,
-        )
+        return daily, monthly, summary
+
 
 # ==============================================================================
 # Singleton Repository
@@ -586,7 +914,6 @@ repo = AttendanceRepository()
 # ==============================================================================
 # Backward-compatible wrapper functions
 # ==============================================================================
-
 
 def ensure_repository():
     """
@@ -723,3 +1050,63 @@ def rebuild_repository():
     Rebuild processed datasets.
     """
     return repo.rebuild_repository()
+
+
+def processed_exists():
+    """
+    Check whether processed datasets exist.
+    """
+    return repo.processed_exists()
+
+
+def load_daily():
+    """
+    Load processed daily attendance data.
+    """
+    return repo.load_daily()
+
+
+def load_monthly():
+    """
+    Load processed monthly attendance data.
+    """
+    return repo.load_monthly()
+
+def processed_last_updated():
+    """
+    Return the last updated timestamp
+    of the processed repository.
+    """
+    return repo.processed_last_updated()
+
+
+def load_users():
+    """
+    Load repository users data.
+    """
+    return repo.load_users()
+
+def load_roles():
+    return repo.load_roles()
+
+def save_roles(roles):
+    return repo.save_roles(roles)
+
+def load_companies():
+    """
+    Load repository company configuration.
+    """
+    return repo.load_companies()
+
+
+def save_companies(companies):
+    """
+    Save repository company configuration.
+    """
+    return repo.save_companies(companies)
+
+def save_users(users):
+    """
+    Save repository users data.
+    """
+    return repo.save_users(users)

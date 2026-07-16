@@ -5,7 +5,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from utils.storage import initialize_storage_backend, migrate_local_files_to_storage
+from utils.storage import ( # noqa: E402 
+    initialize_storage_backend, 
+    migrate_local_files_to_storage,
+)
 
 def main():
     backend = os.getenv("ATTENDANCE_STORAGE_BACKEND", "supabase")

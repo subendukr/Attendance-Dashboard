@@ -5,15 +5,17 @@ Determines the company based on the uploaded
 attendance workbook filename.
 """
 
-from config.company_config import load_companies
-
-
 # ==========================================================
 # DETECT COMPANY
 # ==========================================================
 
 
 def detect_company(filename):
+    """
+    Detect the company based on the uploaded filename.
+    """
+
+    from config.company_config import load_companies
 
     filename = filename.upper()
 

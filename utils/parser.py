@@ -455,37 +455,6 @@ def extract_monthly(filepath):
 
     return monthly
 
-
-# ==========================================================
-# SAVE PROCESSED FILES
-# ==========================================================
-
-
-def save_processed(daily, monthly):
-    """Save processed datasets using the repository-backed storage layer."""
-
-    from utils.repository import repo
-
-    output = repo.storage.ensure_directory("processed")
-
-    daily_file = output / "EmployeeDaily.xlsx"
-    monthly_file = output / "EmployeeMonthly.xlsx"
-
-    daily.to_excel(daily_file, index=False)
-    monthly.to_excel(monthly_file, index=False)
-
-    print()
-    print("=" * 60)
-    print("Processed datasets saved successfully")
-    print("-" * 60)
-    print(f"Daily Dataset   : {daily_file}")
-    print(f"Monthly Dataset : {monthly_file}")
-    print("=" * 60)
-    print()
-
-    return (daily_file, monthly_file)
-
-
 # ==========================================================
 # MAIN ENTRY POINT
 # ==========================================================
@@ -566,37 +535,6 @@ def process_report(filepath, save=True):
         monthly.insert(0, "Company", company["code"])
 
     print(f"Monthly Records : {len(monthly)}")
-
-    print()
-
-    # --------------------------------------------------
-    # SAVE
-    # --------------------------------------------------
-
-    if save:
-        save_processed(daily, monthly)
-
-    print("=" * 70)
-
-    print("Attendance Processing Completed")
-
-    print("=" * 70)
-
-    print()
-
-    print("Summary")
-
-    print("-" * 70)
-
-    print(f"Employees : {monthly['EmpCode'].nunique()}")
-
-    print(f"Departments : {monthly['Department'].nunique()}")
-
-    print(f"Daily Records : {len(daily)}")
-
-    print(f"Monthly Records : {len(monthly)}")
-
-    print("-" * 70)
 
     print()
 
@@ -686,7 +624,5 @@ def process_reports(file_list):
         print("Nothing to save.")
 
         return (daily, monthly, all_summary)
-
-    save_processed(daily, monthly)
 
     return daily, monthly, all_summary

@@ -1,12 +1,15 @@
 import streamlit as st
-from pathlib import Path
-from io import BytesIO
-from datetime import datetime
+
 
 from utils.data_access import load_daily_data
 from utils.filters import filter_daily
 from utils.metrics import employee_metrics
 from utils.metrics import time_metrics
+
+from utils.export import (
+    dataframe_to_csv,
+    dataframe_to_excel,
+)
 
 from utils.company_ui import is_global_user, show_company_column
 
@@ -26,6 +29,7 @@ from utils.employee import (
 
 from utils.charts.employee import employee_history_chart, employee_status_pie
 
+from services.attendance_service import attendance_service
 
 def status_style(value):
 
@@ -332,11 +336,9 @@ st.markdown("---")
 with st.container(border=True):
     st.subheader("📥 Export Reports")
 
-    csv = daily_log.to_csv(index=False).encode("utf-8")
+    csv = dataframe_to_csv(daily_log)
 
-    buffer = BytesIO()
-
-    daily_log.to_excel(buffer, index=False, engine="openpyxl")
+    excel_data = dataframe_to_excel(daily_log)
 
     c1, c2 = st.columns(2)
 
@@ -352,7 +354,7 @@ with st.container(border=True):
     with c2:
         st.download_button(
             "📥 Download Excel",
-            buffer.getvalue(),
+            excel_data,
             file_name=f"{selected_empcode}_{selected_month}_{selected_year}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             width="stretch",
@@ -409,12 +411,9 @@ if show_company_column():
 # LAST UPDATED
 # ==========================================================
 
-processed_file = Path("data/processed/EmployeeDaily.xlsx")
+last_updated = attendance_service.get_processed_last_updated()
 
-if processed_file.exists():
-    last_updated = datetime.fromtimestamp(processed_file.stat().st_mtime)
-
-    st.caption(f"Processed Data Updated: {last_updated:%d-%b-%Y %H:%M}")
-
-
-st.caption("© Neelkamal Steel Industry")
+if last_updated:
+    st.caption(
+        f"Processed Data Updated: {last_updated:%d-%b-%Y %H:%M}"
+    )

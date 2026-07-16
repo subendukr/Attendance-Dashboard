@@ -1,8 +1,14 @@
 import streamlit as st
 
-from pathlib import Path
 from datetime import datetime
 from auth.permissions import require_login
+
+from utils.export import (
+    dataframe_to_csv,
+    dataframe_to_excel,
+)
+
+from utils.ui_filters import render_sidebar_filters
 
 # ==========================================================
 # ANALYTICS
@@ -26,7 +32,7 @@ from utils.analytics import (
     overtime_summary,
 )
 
-from utils.company_ui import is_global_user, show_company_column
+from utils.company_ui import show_company_column
 
 # ==========================================================
 # CHARTS
@@ -49,7 +55,6 @@ from utils.charts.department import (
 # EXPORT
 # ==========================================================
 
-from utils.export import dataframe_to_excel
 
 from auth.layout import render_header
 
@@ -62,8 +67,6 @@ render_header(title="Neelkamal Steel Industry", subtitle="Attendance Analytics")
 
 monthly = attendance_service.get_monthly_data()
 daily = attendance_service.get_daily_data()
-
-from utils.ui_filters import render_sidebar_filters
 
 (
     selected_year,
@@ -503,7 +506,7 @@ st.markdown("## 📥 Export Reports")
 
 st.caption("Download the filtered analytics register.")
 
-csv_data = register.to_csv(index=False).encode("utf-8")
+csv_data = dataframe_to_csv(register)
 
 excel_data = dataframe_to_excel(register)
 
@@ -535,10 +538,9 @@ st.divider()
 
 st.markdown("## ℹ Dataset Information")
 
-processed_file = Path("data/processed/EmployeeMonthly.xlsx")
+updated = attendance_service.get_processed_last_updated()
 
-if processed_file.exists():
-    updated = datetime.fromtimestamp(processed_file.stat().st_mtime)
+if updated:
 
     info1, info2 = st.columns(2)
 

@@ -1,4 +1,3 @@
-from pathlib import Path
 
 import pandas as pd
 
@@ -63,7 +62,6 @@ import pytest
 
 from utils.storage import (
     StorageConfigurationError,
-    SupabaseStorage,
 )
 
 def test_supabase_storage_requires_credentials(monkeypatch):

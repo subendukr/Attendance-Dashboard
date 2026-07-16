@@ -2,10 +2,11 @@ import logging
 import os
 import tempfile
 from io import BytesIO
+import json
 
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import pandas as pd
 
@@ -108,6 +109,46 @@ class StorageAdapter(ABC):
     ) -> pd.DataFrame:
         """
         Load a CSV into a DataFrame.
+        """
+        raise NotImplementedError
+    
+    @abstractmethod
+    def load_json(self, relative_path: str):
+        """
+        Load a JSON object from storage.
+
+        Parameters
+        ----------
+        relative_path
+            Repository-relative JSON path.
+
+        Returns
+        -------
+        dict | list
+            Parsed JSON object.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def save_json(
+        self,
+        data,
+        relative_path: str,
+    ):
+        """
+        Persist a JSON object.
+
+        Parameters
+        ----------
+        data
+            Dictionary or list to serialize.
+
+        relative_path
+            Repository-relative path.
+
+        Returns
+        -------
+        Storage-specific saved location.
         """
         raise NotImplementedError
 
@@ -287,6 +328,47 @@ class LocalStorage(StorageAdapter):
         )
 
         return pd.read_csv(path)
+    
+    def load_json(self, relative_path: str):
+        """
+        Load a JSON object from local storage.
+        """
+
+        path = self.resolve(relative_path)
+
+        if not path.exists():
+            raise StorageDownloadError(
+                f"{path} does not exist."
+            )
+
+        with open(path, "r", encoding="utf-8") as file:
+            return json.load(file)
+   
+    def save_json(
+        self,
+        data,
+        relative_path: str,
+    ):
+        """
+        Save a JSON object to local storage.
+        """
+
+        path = self.resolve(relative_path)
+
+        path.parent.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        with open(path, "w", encoding="utf-8") as file:
+            json.dump(
+                data,
+                file,
+                indent=2,
+                ensure_ascii=False,
+            )
+
+        return path
 
 
 class SupabaseStorage(StorageAdapter):
@@ -542,6 +624,39 @@ class SupabaseStorage(StorageAdapter):
         )
 
         return dataframe
+    
+    def load_json(self, relative_path: str):
+        """
+        Load a JSON object from Supabase storage.
+        """
+
+        content = self.read_bytes(relative_path)
+
+        return json.loads(
+            content.decode("utf-8")
+        )
+    
+    def save_json(
+        self,
+        data,
+        relative_path: str,
+    ):
+        """
+        Save a JSON object to Supabase storage.
+        """
+
+        content = json.dumps(
+            data,
+            indent=2,
+            ensure_ascii=False,
+        ).encode("utf-8")
+
+        self.write_bytes(
+            relative_path,
+            content,
+        )
+
+        return self.resolve(relative_path)
 
 def create_storage(backend=None,root=None,url=None,key=None,bucket=None):
     """

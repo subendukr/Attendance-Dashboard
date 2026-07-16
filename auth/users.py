@@ -1,174 +1,77 @@
-"""
-User Management
-
-Loads users from data/users.csv and performs
-user authentication.
-
-This module is responsible only for user
-management and authentication.
-"""
-
-from pathlib import Path
-
-import pandas as pd
+from __future__ import annotations
 
 from auth.hashing import verify_password
-
-
-# ==========================================================
-# USER DATABASE
-# ==========================================================
-
-DATA_FOLDER = Path("data")
-
-USERS_FILE = DATA_FOLDER / "users.csv"
-
-
-# ==========================================================
-# LOAD USERS
-# ==========================================================
+from utils.repository import (
+    load_users as repository_load_users,
+)
 
 
 def load_users():
-    """
-    Load all users.
-
-    Returns
-    -------
-    pandas.DataFrame
-    """
-
-    if not USERS_FILE.exists():
-        raise FileNotFoundError(f"User database not found:\n{USERS_FILE}")
-
-    users = pd.read_csv(USERS_FILE)
-
-    if "Active" in users.columns:
-        users["Active"] = users["Active"].astype(str).str.upper().eq("TRUE")
-
-    return users
-
-
-# ==========================================================
-# FIND USER
-# ==========================================================
+    return repository_load_users()
 
 
 def find_user(username):
-    """
-    Find a user by username.
-
-    Returns
-    -------
-    pandas.Series | None
-    """
-
     users = load_users()
-
-    user = users[users["Username"].str.lower() == str(username).lower()]
-
-    if user.empty:
-        return None
-
-    return user.iloc[0]
-
-
-# ==========================================================
-# USER EXISTS
-# ==========================================================
+    return users[users["Username"] == username]
 
 
 def user_exists(username):
-    """
-    Check whether a username exists.
-    """
-
-    return find_user(username) is not None
-
-
-# ==========================================================
-# USER IS ACTIVE
-# ==========================================================
+    return not find_user(username).empty
 
 
 def is_active(username):
-    """
-    Check whether a user is active.
-    """
-
-    user = find_user(username)
-
-    if user is None:
+    users = load_users()
+    user = users[users["Username"] == username]
+    if user.empty:
         return False
-
-    return bool(user["Active"])
-
-
-# ==========================================================
-# AUTHENTICATE USER
-# ==========================================================
+    return bool(user.iloc[0]["Active"])
 
 
 def authenticate_user(username, password):
     """
     Authenticate a user.
 
-    Parameters
-    ----------
-    username : str
-
-    password : str
-
     Returns
     -------
     pandas.Series | None
+        Authenticated user record if credentials are valid,
+        otherwise None.
     """
 
-    user = find_user(username)
+    users = load_users()
 
-    if user is None:
+    user = users[
+        users["Username"] == username
+    ]
+
+    if user.empty:
         return None
 
-    if not user["Active"]:
+    row = user.iloc[0]
+
+    if not bool(row["Active"]):
         return None
 
-    if not verify_password(password, user["Password"]):
+    if not verify_password(
+        password,
+        row["Password"],
+    ):
         return None
 
-    return user
-
-
-# ==========================================================
-# GET USER ROLE
-# ==========================================================
+    return row
 
 
 def get_role(username):
-    """
-    Return user's role.
-    """
-
-    user = find_user(username)
-
-    if user is None:
+    users = load_users()
+    user = users[users["Username"] == username]
+    if user.empty:
         return None
-
-    return user["Role"]
-
-
-# ==========================================================
-# GET USER NAME
-# ==========================================================
+    return user.iloc[0]["Role"]
 
 
 def get_name(username):
-    """
-    Return display name.
-    """
-
-    user = find_user(username)
-
-    if user is None:
+    users = load_users()
+    user = users[users["Username"] == username]
+    if user.empty:
         return None
-
-    return user["Name"]
+    return user.iloc[0]["Name"]

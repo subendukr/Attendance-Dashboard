@@ -4,6 +4,7 @@ from utils.filters import filter_monthly
 from utils.metrics import dashboard_metrics
 from auth.permissions import require_login
 from services.attendance_service import attendance_service
+from utils.ui_filters import render_sidebar_filters
 
 from utils.charts.attendance import (
     attendance_summary_chart,
@@ -26,7 +27,24 @@ render_header(
 
 monthly = attendance_service.get_monthly_data()
 
-from utils.ui_filters import render_sidebar_filters
+if not attendance_service.has_processed_data():
+
+    st.info(
+        """
+## 📂 No Attendance Data Available
+
+No processed attendance repository exists yet.
+
+### To get started:
+
+1. Open the **📤 Upload** page.
+2. Upload one or more attendance workbooks.
+3. Wait for processing to complete.
+4. Return to the Dashboard.
+"""
+    )
+
+    st.stop()
 
 (
     selected_year,
