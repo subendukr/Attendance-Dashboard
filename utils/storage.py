@@ -482,19 +482,17 @@ class SupabaseStorage(StorageAdapter):
             ) from exc
 
 
-    def _list(self, path=""):
-        try:
-            return self._storage().list(path=path)
+    def list_files(self,relative_dir=".",pattern="*"):
+        # "." means bucket root in the repository.
+        if str(relative_dir) in (".", ""):
+            path = ""
+        else:
+            path = self._path_to_key(relative_dir)
 
-        except Exception:
-            logger.exception("List failed: %s", path)
-            return []
-
-    def list_files(self, relative_dir=".", pattern="*"):
-        items = self._list(self._path_to_key(relative_dir))
+        items = self._list(path)
 
         return [
-            Path(item.get("name"))
+            Path(item["name"])
             for item in items
             if item.get("name")
         ]
@@ -550,10 +548,27 @@ class SupabaseStorage(StorageAdapter):
             logger.exception("Unable to initialize bucket.")
             return False
 
-    def exists(self, relative_path):
+    def exists(
+        self,
+        relative_path,
+    ):
         parent = Path(relative_path).parent
         filename = Path(relative_path).name
+
+        if str(parent) == ".":
+            parent = ""
+
         files = self.list_files(parent)
+
+        # ---------- TEMPORARY DEBUG ----------
+        logger.info(
+            "Checking %s in '%s' -> %s",
+            filename,
+            parent,
+            [f.name for f in files],
+        )
+    # -------------------------------------
+
         return any(
             f.name == filename
             for f in files
