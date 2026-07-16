@@ -161,7 +161,7 @@ class LocalStorage(StorageAdapter):
     repository while keeping all filesystem logic isolated.
     """
 
-    def __init__(self, root: Optional[Union[str, Path]] = None):
+    _init__(self, root: Optional[Union[str, Path]] = None):
         self.root = Path(root) if root else Path.cwd()
 
         logger.info(
@@ -481,6 +481,13 @@ class SupabaseStorage(StorageAdapter):
                 f"Unable to delete '{key}'."
             ) from exc
 
+    def _list(self, path=""):
+        try:
+            return self._storage().list(path=path)
+        
+        except Exception:
+            logger.exception("List failed: %s", path) 
+            return []
 
     def list_files(self,relative_dir=".",pattern="*"):
         # "." means bucket root in the repository.
