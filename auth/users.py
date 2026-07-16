@@ -1,6 +1,6 @@
-import logging
-
 from __future__ import annotations
+
+import logging
 
 from auth.hashing import verify_password
 from utils.repository import (
@@ -10,7 +10,7 @@ from utils.repository import (
 logger = logging.getLogger(__name__)
 
 def load_users():
-    return repository_load_users(__name__)
+    return repository_load_users()
 
 
 def find_user(username):
