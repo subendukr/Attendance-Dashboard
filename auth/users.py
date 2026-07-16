@@ -1,3 +1,5 @@
+import logging
+
 from __future__ import annotations
 
 from auth.hashing import verify_password
@@ -5,9 +7,10 @@ from utils.repository import (
     load_users as repository_load_users,
 )
 
+logger = logging.getLogger(__name__)
 
 def load_users():
-    return repository_load_users()
+    return repository_load_users(__name__)
 
 
 def find_user(username):
@@ -40,23 +43,41 @@ def authenticate_user(username, password):
 
     users = load_users()
 
+    logger.info("Loaded %d users.", len(users))
+    logger.info("Usernames: %s", users["Username"].tolist())
+
+    logger.info("Login attempt: '%s'", username)
+
     user = users[
         users["Username"] == username
     ]
 
     if user.empty:
+        logger.warning("User not found.")
         return None
+
+    logger.info("User found.")
 
     row = user.iloc[0]
 
+    logger.info("User active: %s", row["Active"])
+
     if not bool(row["Active"]):
+        logger.warning("User is inactive.")
         return None
 
-    if not verify_password(
+    password_ok = verify_password(
         password,
         row["Password"],
-    ):
+    )
+
+    logger.info("Password valid: %s", password_ok)
+
+    if not password_ok:
+        logger.warning("Password verification failed.")
         return None
+
+    logger.info("Authentication successful.")
 
     return row
 
