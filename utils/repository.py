@@ -9,6 +9,7 @@ All file operations are delegated to StorageAdapter.
 """
 
 from __future__ import annotations
+from pathlib import Path
 
 import logging
 from datetime import datetime
@@ -17,7 +18,7 @@ from typing import Optional
 import pandas as pd
 
 from utils.company_detector import detect_company
-from utils.parser import process_reports
+
 from utils.storage import StorageAdapter, create_storage
 
 
@@ -87,7 +88,7 @@ class AttendanceRepository:
             will be created automatically.
         """
 
-        self.storage = storage or create_storage(root="data")
+        self.storage = storage or create_storage()
 
         logger.info(
             "AttendanceRepository initialized using %s",
@@ -529,7 +530,7 @@ class AttendanceRepository:
     # Repository operations
     # ------------------------------------------------------------------
 
-    def list_repository(self) -> list:
+    def list_repository(self):
         """
         Return every workbook stored in the raw repository.
 
@@ -557,10 +558,7 @@ class AttendanceRepository:
             )
 
             repository.append(
-                self.storage.resolve(
-                    self.RAW_FOLDER,
-                    name,
-                )
+                Path(self.RAW_FOLDER) / name
             )
 
         repository.sort()
@@ -737,58 +735,44 @@ class AttendanceRepository:
     def processed_last_updated(self):
         """
         Return the last modified timestamp of the processed datasets.
-
-        Returns
-        -------
-        datetime | None
-            Last modified time of the processed repository,
-            or None if no processed data exists.
         """
 
         if not self.processed_exists():
             return None
 
-        file_path = self.storage.resolve(
+        return self.storage.last_modified(
             f"{self.PROCESSED_FOLDER}/EmployeeMonthly.xlsx"
-        )
-
-        return datetime.fromtimestamp(
-            file_path.stat().st_mtime
         )
 
     def copy_workbook(self,source):
         """
         Copy an existing workbook into the repository.
 
-        Unlike the previous implementation,
-        this version works with every storage backend.
         """
 
-        source = self.storage.resolve(source)
+        filename = (
+            source.name
+            if hasattr(source, "name")
+            else Path(source).name
+        )
 
         destination = (
-            f"{self.RAW_FOLDER}/"
-            f"{source.name}"
+            f"{self.RAW_FOLDER}/{filename}"
         )
 
         logger.info(
             "Copying workbook %s",
-            source.name,
+            filename,
         )
 
-        with open(
-            source,
-            "rb",
-        ) as handle:
+        data = self.storage.read_bytes(source)
 
-            self.storage.write_bytes(
-                destination,
-                handle.read(),
-            )
-
-        return self.storage.resolve(
+        self.storage.write_bytes(
             destination,
+            data,
         )
+
+        return Path(destination)
 
     def delete_workbook(
         self,
@@ -798,39 +782,40 @@ class AttendanceRepository:
         Delete a workbook from the repository.
         """
 
-        relative_path = (
-            f"{self.RAW_FOLDER}/{filename}"
-        )
+        relative_path = f"{self.RAW_FOLDER}/{filename}"
 
-        if not self.storage.exists(
-            relative_path,
-        ):
+        if not self.storage.exists(relative_path):
 
-            logger.warning(
-                "Workbook not found: %s",
-                filename,
-            )
+            logger.warning("Workbook not found: %s", filename)
 
-            return (
-                False,
-                "Workbook does not exist.",
-            )
+            return (False, "Workbook does not exist.")
 
         try:
 
-            self.storage.delete(
-                relative_path,
-            )
+            # ------------------------------------------
+            # Delete the raw workbook
+            # ------------------------------------------
 
-            logger.info(
-                "Deleted workbook %s",
-                filename,
-            )
+            self.storage.delete(relative_path)
 
-            return (
-                True,
-                "Workbook deleted successfully.",
-            )
+            logger.info("Deleted workbook %s", filename)
+
+            # ------------------------------------------
+            # If no raw workbooks remain,
+            # remove processed datasets.
+            # ------------------------------------------
+
+            remaining_workbooks = self.list_repository()
+
+            if not remaining_workbooks:
+
+                logger.info(
+                    "Repository is empty. Clearing processed datasets."
+                )
+
+                self.clear_processed_data()
+
+            return (True, "Workbook deleted successfully.")
 
         except Exception as exc:
 
@@ -839,22 +824,24 @@ class AttendanceRepository:
                 filename,
             )
 
-            return (
-                False,
-                str(exc),
-            )
+            return (False, str(exc))
 
     def clear_repository(self) -> None:
         """
-        Remove every workbook from the repository.
+        Remove every workbook from the repository and
+        reset all repository metadata.
         """
+
+        removed = 0
+
+        # --------------------------------------------------
+        # Remove raw workbooks
+        # --------------------------------------------------
 
         files = self.storage.list_files(
             self.RAW_FOLDER,
             pattern="*.xlsx",
         )
-
-        removed = 0
 
         for workbook in files:
 
@@ -870,12 +857,64 @@ class AttendanceRepository:
 
             removed += 1
 
+        # --------------------------------------------------
+        # Remove processed datasets
+        # --------------------------------------------------
+
+        self.clear_processed_data()
+
+        # --------------------------------------------------
+        # Reset metadata
+        # --------------------------------------------------
+
+        empty_metadata = pd.DataFrame(
+            columns=self.METADATA_COLUMNS,
+        )
+
+        self.storage.save_csv(
+            empty_metadata,
+            self.METADATA_FILE,
+        )
+
+        logger.info("Repository metadata reset.")
+
         logger.info(
             "Repository cleared (%d workbook(s)).",
             removed,
         )
 
+    def clear_processed_data(self) -> None:
+        """
+        Remove all processed attendance datasets.
+        """
+
+        processed_files = [
+            f"{self.PROCESSED_FOLDER}/EmployeeDaily.xlsx",
+            f"{self.PROCESSED_FOLDER}/EmployeeMonthly.xlsx",
+        ]
+
+        removed = 0
+
+        for path in processed_files:
+
+            if self.storage.exists(path):
+
+                self.storage.delete(path)
+
+                logger.info(
+                    "Deleted processed dataset: %s",
+                    path,
+                )
+
+                removed += 1
+
+        logger.info(
+            "Processed repository cleared (%d dataset(s)).",
+            removed,
+        )
+
     def rebuild_repository(self):
+        from utils.parser import process_reports
         """
         Rebuild processed datasets from every
         workbook currently stored.

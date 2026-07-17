@@ -1,6 +1,7 @@
 import logging
 import os
 import tempfile
+from datetime import datetime
 from io import BytesIO
 import json
 
@@ -73,6 +74,10 @@ class StorageAdapter(ABC):
 
     @abstractmethod
     def exists(self, relative_path):
+        pass
+
+    @abstractmethod
+    def last_modified(self, relative_path):
         pass
 
     @abstractmethod
@@ -261,11 +266,18 @@ class LocalStorage(StorageAdapter):
 
         return True
 
-    def exists(
-        self,
-        relative_path,
-    ):
+    def exists(self, relative_path):
         return self.resolve(relative_path).exists()
+    
+    def last_modified(self, relative_path):
+        path = self.resolve(relative_path)
+
+        if not path.exists():
+            return None
+
+        return datetime.fromtimestamp(
+            path.stat().st_mtime
+        )
 
     def save_dataframe(
         self,
@@ -359,7 +371,7 @@ class LocalStorage(StorageAdapter):
 
     def read_excel(self, relative_path, **kwargs):
         path = self.resolve(relative_path)
-        pd.read_excel(path, **kwargs)
+        return pd.read_excel(path, **kwargs)
         
     # ==========================================
     # JSON
@@ -445,7 +457,7 @@ class SupabaseStorage(StorageAdapter):
         return self.resolve(*parts)
 
     def resolve(self, *parts):
-        return self.root.joinpath(*parts)
+        return Path(*parts)
 
     def _path_to_key(self, relative_path):
         """
@@ -616,6 +628,19 @@ class SupabaseStorage(StorageAdapter):
             f.name == filename
             for f in files
         )
+    
+    def last_modified(self, relative_path):
+        """
+        Return the last modified timestamp of a Supabase object.
+
+        Currently not implemented.
+        """
+
+        logger.debug(
+            "last_modified() is not yet implemented for Supabase."
+        )
+
+        return None
 
     def save_dataframe(self, dataframe: pd.DataFrame, relative_path):
         with tempfile.NamedTemporaryFile(
@@ -636,12 +661,7 @@ class SupabaseStorage(StorageAdapter):
 
     def load_dataframe(self, relative_path):
         data = self.read_bytes(relative_path)
-        if isinstance(data, bytes):
-            path = self.resolve(relative_path)
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_bytes(data)
-            return pd.read_excel(path)
-        return pd.read_excel(data)
+        return pd.read_excel(BytesIO(data))
     
     # ==========================================
     # CSV
