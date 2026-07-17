@@ -1,6 +1,9 @@
 import pandas as pd
 from pathlib import Path
-
+from utils.repository import (
+    open_workbook,
+    read_workbook,
+)
 
 # ==========================================================
 # FILE VALIDATION
@@ -48,10 +51,10 @@ def validate_file(filepath):
     # ------------------------------------------------------
 
     try:
-        xls = pd.ExcelFile(filepath)
+        xls = open_workbook(filepath)
 
     except Exception as e:
-        return (False, f"Unable to open workbook.\n\n{e}")
+        return (False,f"Unable to open workbook.\n\n{e}")
 
     # ------------------------------------------------------
     # Sheet Check
@@ -68,7 +71,7 @@ def validate_file(filepath):
 
     for sheet in xls.sheet_names:
         try:
-            df = pd.read_excel(filepath, sheet_name=sheet, header=None)
+            df = read_workbook(filepath, sheet_name=sheet, header=None)
 
             if not df.empty:
                 valid_sheet_count += 1

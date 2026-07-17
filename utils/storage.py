@@ -91,6 +91,16 @@ class StorageAdapter(ABC):
         pass
 
     @abstractmethod
+    def load_csv(
+        self,
+        relative_path: str,
+    ) -> pd.DataFrame:
+        """
+        Load a CSV into a DataFrame.
+        """
+        raise NotImplementedError
+    
+    @abstractmethod
     def save_csv(
         self,
         dataframe: pd.DataFrame,
@@ -100,15 +110,20 @@ class StorageAdapter(ABC):
         Save a DataFrame as CSV.
         """
         raise NotImplementedError
-
-
-    @abstractmethod
-    def load_csv(
+    
+    def open_excel(self, relative_path: str):
+        """
+        Return a pandas.ExcelFile object.
+        """
+        raise NotImplementedError
+    
+    def read_excel(
         self,
         relative_path: str,
-    ) -> pd.DataFrame:
+        **kwargs,
+    ):
         """
-        Load a CSV into a DataFrame.
+        Read an Excel sheet into a DataFrame.
         """
         raise NotImplementedError
     
@@ -313,6 +328,10 @@ class LocalStorage(StorageAdapter):
 
         return path
     
+    # ==========================================
+    # CSV
+    # ==========================================
+
     def load_csv(
         self,
         relative_path: str,
@@ -328,6 +347,23 @@ class LocalStorage(StorageAdapter):
         )
 
         return pd.read_csv(path)
+
+    # ==========================================
+    # Excel
+    # ==========================================
+
+    def open_excel(self, relative_path):
+        path = self.resolve(relative_path)
+        return pd.ExcelFile(path)
+
+
+    def read_excel(self, relative_path, **kwargs):
+        path = self.resolve(relative_path)
+        pd.read_excel(path, **kwargs)
+        
+    # ==========================================
+    # JSON
+    # ==========================================
     
     def load_json(self, relative_path: str):
         """
@@ -607,6 +643,10 @@ class SupabaseStorage(StorageAdapter):
             return pd.read_excel(path)
         return pd.read_excel(data)
     
+    # ==========================================
+    # CSV
+    # ==========================================
+    
     def save_csv(
         self,
         dataframe: pd.DataFrame,
@@ -646,6 +686,24 @@ class SupabaseStorage(StorageAdapter):
         )
 
         return dataframe
+    
+
+    # ==========================================
+    # EXCEL
+    # ==========================================
+
+    def open_excel(self, relative_path):
+        data = self.read_bytes(relative_path)
+        return pd.ExcelFile(BytesIO(data))
+
+
+    def read_excel(self,relative_path,**kwargs):
+        data = self.read_bytes(relative_path)
+        return pd.read_excel(BytesIO(data), **kwargs)
+
+    # ==========================================
+    # JSON
+    # ==========================================
     
     def load_json(self, relative_path: str):
         """

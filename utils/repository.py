@@ -148,6 +148,17 @@ class AttendanceRepository:
             self.METADATA_FILE,
         )
 
+    # ==========================================================
+    # Workbook Operations
+    # ==========================================================
+
+    def open_workbook(self, relative_path):
+        return self.storage.open_excel(relative_path)
+
+
+    def read_workbook(self, relative_path, **kwargs):
+        return self.storage.read_excel(relative_path, **kwargs)
+
     # ------------------------------------------------------------------
     # User management
     # ------------------------------------------------------------------
@@ -1079,12 +1090,23 @@ def processed_last_updated():
     """
     return repo.processed_last_updated()
 
+def open_workbook(path):
+    return repo.open_workbook(path)
+
+def read_workbook(path, **kwargs):
+    return repo.read_workbook(path, **kwargs)
 
 def load_users():
     """
     Load repository users data.
     """
     return repo.load_users()
+
+def save_users(users):
+    """
+    Save repository users data.
+    """
+    return repo.save_users(users)
 
 def load_roles():
     return repo.load_roles()
@@ -1098,15 +1120,8 @@ def load_companies():
     """
     return repo.load_companies()
 
-
 def save_companies(companies):
     """
     Save repository company configuration.
     """
     return repo.save_companies(companies)
-
-def save_users(users):
-    """
-    Save repository users data.
-    """
-    return repo.save_users(users)

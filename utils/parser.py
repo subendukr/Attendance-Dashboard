@@ -233,7 +233,7 @@ def extract_daily(filepath):
     from every worksheet in the workbook.
     """
 
-    xls = pd.ExcelFile(filepath)
+    xls = repo.open_workbook(filepath)
 
     print("\n" + "=" * 70)
     print("Workbook contains the following sheets:")
@@ -257,7 +257,7 @@ def extract_daily(filepath):
         print("=" * 60)
 
         try:
-            df = pd.read_excel(filepath, sheet_name=sheet, header=None)
+            df = repo.read_workbook(filepath, sheet_name=sheet, header=None)
 
             # ---------------------------------------------
             # Debug Information
@@ -383,14 +383,14 @@ def extract_monthly(filepath):
     summary from every worksheet.
     """
 
-    xls = pd.ExcelFile(filepath)
+    xls = repo.open_workbook(filepath)
 
     records = []
 
     for sheet in xls.sheet_names:
         print(f"Processing sheet : {sheet}")
 
-        df = pd.read_excel(filepath, sheet_name=sheet, header=None)
+        df = repo.read_workbook(filepath, sheet_name=sheet, header=None)
 
         # ---------------------------------------------
         # Skip invalid sheets
