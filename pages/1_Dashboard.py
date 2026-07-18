@@ -31,16 +31,14 @@ if not attendance_service.has_processed_data():
 
     st.info(
         """
-## 📂 No Attendance Data Available
+## 📂 Attendance data is currently unavailable.
 
-No processed attendance repository exists yet.
+Please contact the HR Department to upload the Monthly and Daily Attendance records.
+Thank you
 
-### To get started:
-
-1. Open the **📤 Upload** page.
-2. Upload one or more attendance workbooks.
-3. Wait for processing to complete.
-4. Return to the Dashboard.
+### Contact:
+📞 7488773716
+📧 subendu.neelkamal110@gmail.com
 """
     )
 
