@@ -11,6 +11,10 @@ from typing import Optional, Union
 
 import pandas as pd
 
+DEFAULT_STORAGE_ROOT = "data"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_STORAGE_ROOT = PROJECT_ROOT / "data"
+
 try:
     from supabase import create_client
 except ImportError:
@@ -181,13 +185,8 @@ class LocalStorage(StorageAdapter):
     repository while keeping all filesystem logic isolated.
     """
 
-    def __init__(self, root: Optional[Union[str, Path]] = None):
-        self.root = Path(root) if root else Path.cwd()
-
-        logger.info(
-            "Initialized LocalStorage at %s",
-            self.root,
-        )
+    def __init__(self, root: Union[str, Path]):
+        self.root = Path(root).resolve()
 
     def ensure_directory(self, *parts):
         path = self.resolve(*parts)
@@ -197,11 +196,7 @@ class LocalStorage(StorageAdapter):
     def resolve(self, *parts):
         return self.root.joinpath(*parts)
 
-    def list_files(
-        self,
-        relative_dir=".",
-        pattern="*",
-    ):
+    def list_files(self, relative_dir=".", pattern="*"):
         directory = self.resolve(relative_dir)
 
         if not directory.exists():
@@ -213,12 +208,7 @@ class LocalStorage(StorageAdapter):
             if p.is_file()
         )
 
-    def write_bytes(
-        self,
-        relative_path,
-        content,
-        overwrite=True,
-    ):
+    def write_bytes(self, relative_path, content, overwrite=True):
         path = self.resolve(relative_path)
 
         path.parent.mkdir(
@@ -227,11 +217,6 @@ class LocalStorage(StorageAdapter):
         )
 
         path.write_bytes(content)
-
-        logger.debug(
-            "Saved file %s",
-            path,
-        )
 
         return path
 
@@ -258,11 +243,6 @@ class LocalStorage(StorageAdapter):
             return False
 
         path.unlink()
-
-        logger.debug(
-            "Deleted %s",
-            path,
-        )
 
         return True
 
@@ -294,11 +274,6 @@ class LocalStorage(StorageAdapter):
         dataframe.to_excel(
             path,
             index=False,
-        )
-
-        logger.debug(
-            "Saved dataframe %s",
-            path,
         )
 
         return path
@@ -333,30 +308,17 @@ class LocalStorage(StorageAdapter):
             index=False,
         )
 
-        logger.debug(
-            "Saved CSV %s",
-            path,
-        )
-
         return path
     
     # ==========================================
     # CSV
     # ==========================================
 
-    def load_csv(
-        self,
-        relative_path: str,
-    ):
+    def load_csv(self, relative_path: str):
         path = self.resolve(relative_path)
 
         if not path.exists():
             raise FileNotFoundError(path)
-
-        logger.debug(
-            "Loaded CSV %s",
-            path,
-        )
 
         return pd.read_csv(path)
 
@@ -489,8 +451,6 @@ class SupabaseStorage(StorageAdapter):
                 file_options=options,
             )
 
-            logger.debug("Uploaded %s", key)
-
         except Exception as exc:
             logger.exception("Upload failed: %s", key)
 
@@ -519,8 +479,6 @@ class SupabaseStorage(StorageAdapter):
     def _remove(self, key):
         try:
             self._storage().remove([key])
-
-            logger.debug("Deleted %s", key)
 
         except Exception as exc:
             logger.exception("Delete failed: %s", key)
@@ -636,10 +594,6 @@ class SupabaseStorage(StorageAdapter):
         Currently not implemented.
         """
 
-        logger.debug(
-            "last_modified() is not yet implemented for Supabase."
-        )
-
         return None
 
     def save_dataframe(self, dataframe: pd.DataFrame, relative_path):
@@ -681,11 +635,6 @@ class SupabaseStorage(StorageAdapter):
             csv_bytes,
         )
 
-        logger.debug(
-            "Saved CSV %s",
-            relative_path,
-        )
-
         return self.resolve(relative_path)
 
     def load_csv(
@@ -698,11 +647,6 @@ class SupabaseStorage(StorageAdapter):
 
         dataframe = pd.read_csv(
             BytesIO(data),
-        )
-
-        logger.debug(
-            "Loaded CSV %s",
-            relative_path,
         )
 
         return dataframe
@@ -769,11 +713,10 @@ def create_storage(backend=None,root=None,url=None,key=None,bucket=None):
         or "local"
     ).lower()
 
-    storage_root = (root or os.getenv("ATTENDANCE_STORAGE_ROOT"))
+    storage_root = (Path(root) if root else Path(os.getenv("ATTENDANCE_STORAGE_ROOT", DEFAULT_STORAGE_ROOT)))
 
-    logger.info("Initializing storage backend: %s",backend_name,)
     if backend_name in {"local", "filesystem", "file"}:
-        return LocalStorage(storage_root or Path.cwd())
+        return LocalStorage(storage_root)
     if backend_name in {"cloud", "supabase"}:
         return SupabaseStorage(root=storage_root,url=url,key=key,bucket=bucket)
 
@@ -864,10 +807,6 @@ def migrate_local_files_to_storage(
 
         migrated.append(relative_key)
 
-        logger.debug(
-            "Migrated %s",
-            relative,
-        )
 
     logger.info(
         "Migration complete (%d files).",

@@ -3,14 +3,12 @@ from __future__ import annotations
 import logging
 
 from auth.hashing import verify_password
-from utils.repository import (
-    load_users as repository_load_users,
-)
+from utils.cache import get_users
 
 logger = logging.getLogger(__name__)
 
 def load_users():
-    return repository_load_users()
+    return get_users()
 
 
 def find_user(username):

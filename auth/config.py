@@ -1,5 +1,9 @@
+from utils.cache import (
+    get_roles as cached_load_roles,
+    clear_cache,
+)
+
 from utils.repository import (
-    load_roles as repository_load_roles,
     save_roles as repository_save_roles,
 )
 
@@ -8,14 +12,18 @@ def load_roles():
     """
     Load role definitions from the repository.
     """
-    return repository_load_roles()
+    return cached_load_roles()
 
 
 def save_roles(roles):
     """
     Persist role definitions through the repository.
     """
-    return repository_save_roles(roles)
+    result = repository_save_roles(roles)
+
+    clear_cache()
+
+    return result
 
 
 def get_roles():

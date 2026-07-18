@@ -14,7 +14,7 @@ This module will later provide:
 
 from auth.session import current_company
 
-from utils.load_data import load_daily, load_monthly
+from utils.cache import get_daily, get_monthly
 
 # ==========================================================
 # APPLY COMPANY FILTER
@@ -60,7 +60,7 @@ def load_monthly_data():
     filtered for the current user.
     """
 
-    monthly = load_monthly()
+    monthly = get_monthly()
 
     return _apply_company_filter(monthly)
 
@@ -76,6 +76,6 @@ def load_daily_data():
     filtered for the current user.
     """
 
-    daily = load_daily()
+    daily = get_daily()
 
     return _apply_company_filter(daily)
