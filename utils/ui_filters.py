@@ -32,33 +32,82 @@ def render_sidebar_filters(monthly, title="📂 Dashboard Filters"):
     months = [m for m in month_order if m in months_in_data]
     selected_month = st.sidebar.selectbox("Month", months) if len(months) > 0 else None
 
+    filtered_df = monthly.copy()
+
+    if selected_year is not None:
+        filtered_df = filtered_df[
+            filtered_df["Year"] == selected_year
+        ]
+
+    if selected_month is not None:
+        filtered_df = filtered_df[
+            filtered_df["Month"] == selected_month
+        ]
+
     # ------------------------
     # Company
     # ------------------------
     selected_company = []
+
     if is_global_user():
-        companies = sorted(monthly["Company"].dropna().unique())
-        selected_company = st.sidebar.multiselect("Company", companies, default=companies)
+        companies = sorted(
+            filtered_df["Company"].dropna().unique()
+        )
+
+        selected_company = st.sidebar.multiselect(
+            "Company",
+            companies,
+            default=companies,
+        )
+
+        if selected_company:
+            filtered_df = filtered_df[
+                filtered_df["Company"].isin(selected_company)
+            ]
 
     # ------------------------
     # Department
     # ------------------------
-    departments = sorted(monthly["Department"].dropna().unique())
-    selected_department = st.sidebar.multiselect("Department", departments)
+    departments = sorted(
+        filtered_df["Department"].dropna().unique()
+    )
+
+    selected_department = st.sidebar.multiselect(
+        "Department",
+        departments,
+    )
+
+    if selected_department:
+        filtered_df = filtered_df[
+            filtered_df["Department"].isin(selected_department)
+        ]
 
     # ------------------------
     # Designation
     # ------------------------
-    designations = sorted(monthly["Designation"].dropna().unique())
-    selected_designation = st.sidebar.multiselect("Designation", designations)
+    designations = sorted(
+        filtered_df["Designation"].dropna().unique()
+    )
+
+    selected_designation = st.sidebar.multiselect(
+        "Designation",
+        designations,
+    )
+
+    employee_count = filtered_df["EmpCode"].nunique()
+    department_count = filtered_df["Department"].nunique()
+    designation_count = filtered_df["Designation"].nunique()
 
     st.sidebar.markdown("---")
+
     st.sidebar.info(
         f"""
-**Employees:** {monthly["EmpCode"].nunique()}
+    **Employees:** {employee_count}
 
-**Departments:** {monthly["Department"].nunique()}
-"""
+    **Departments:** {department_count}
+
+    **Designations:** {designation_count}
+    """
     )
 
     return (
