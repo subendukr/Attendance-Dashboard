@@ -1,63 +1,35 @@
 import streamlit as st
-
 from datetime import datetime
+from auth.layout import render_header
 from auth.permissions import require_login
+from utils.metrics import dashboard_metrics
+from utils.company_ui import show_company_column
+from utils.ui_filters import render_sidebar_filters
+from utils.filters import filter_monthly, filter_daily
+from analytics.attendance import monthly_attendance_trend
+from services.attendance_service import attendance_service
 
 from utils.export import (
     dataframe_to_csv,
     dataframe_to_excel,
 )
-
-from utils.ui_filters import render_sidebar_filters
-
-# ==========================================================
-# ANALYTICS
-# ==========================================================
-
-from analytics.attendance import monthly_attendance_trend
-
-# ==========================================================
-# DATA
-# ==========================================================
-
-from utils.filters import filter_monthly, filter_daily
-from services.attendance_service import attendance_service
-
-from utils.metrics import dashboard_metrics
-
 from utils.analytics import (
     department_performance,
     designation_performance,
     top_absentees,
     overtime_summary,
 )
-
-from utils.company_ui import show_company_column
-
-# ==========================================================
-# CHARTS
-# ==========================================================
-
 from utils.charts.attendance import (
     attendance_summary_chart,
     attendance_pie_chart,
     attendance_trend_chart,
     attendance_count_chart,
 )
-
 from utils.charts.department import (
     department_attendance_percentage,
     department_employee_chart,
     department_status_chart,
 )
-
-# ==========================================================
-# EXPORT
-# ==========================================================
-
-
-from auth.layout import render_header
-
 # ==========================================================
 # LOAD DATASETS
 # ==========================================================
@@ -273,9 +245,7 @@ st.divider()
 
 st.markdown("## 🏢 Department Analytics")
 
-st.caption(
-    "Department-wise attendance performance, workforce distribution and attendance behaviour."
-)
+st.caption("Department-wise attendance performance, workforce distribution and attendance behaviour.")
 
 # ==========================================================
 # DEPARTMENT OVERVIEW
@@ -437,10 +407,7 @@ st.markdown("## 📋 Analytics Register")
 
 st.caption("Search, review and export the filtered monthly attendance records.")
 
-search = st.text_input(
-    "🔍 Search Employee",
-    placeholder="Employee Code, Name, Department or Designation...",
-)
+search = st.text_input("🔍 Search Employee", placeholder="Employee Code, Name, Department or Designation...",)
 
 register = monthly_filtered.copy()
 

@@ -7,23 +7,16 @@ independent of the underlying storage backend.
 
 All file operations are delegated to StorageAdapter.
 """
-
 from __future__ import annotations
 from pathlib import Path
-
 import logging
 from datetime import datetime
 from typing import Optional
-
 import pandas as pd
-
 from utils.company_detector import detect_company
-
 from utils.storage import StorageAdapter, create_storage
 
-
 logger = logging.getLogger(__name__)
-
 
 class AttendanceRepository:
     """
@@ -90,10 +83,7 @@ class AttendanceRepository:
 
         self.storage = storage or create_storage()
 
-        logger.info(
-            "AttendanceRepository initialized using %s",
-            self.storage.__class__.__name__,
-        )
+        logger.info("AttendanceRepository initialized using %s", self.storage.__class__.__name__, )
 
         self.ensure_repository()
 
@@ -108,17 +98,11 @@ class AttendanceRepository:
 
         logger.debug("Ensuring repository structure.")
 
-        self.storage.ensure_directory(
-            self.RAW_FOLDER,
-        )
+        self.storage.ensure_directory(self.RAW_FOLDER)
 
-        self.storage.ensure_directory(
-            self.PROCESSED_FOLDER,
-        )
+        self.storage.ensure_directory(self.PROCESSED_FOLDER)
 
-        self.storage.ensure_directory(
-            self.METADATA_FOLDER,
-        )
+        self.storage.ensure_directory(self.METADATA_FOLDER)
 
         self.ensure_metadata()
 
@@ -131,23 +115,14 @@ class AttendanceRepository:
         Create upload_history.csv if it does not already exist.
         """
 
-        if self.storage.exists(
-            self.METADATA_FILE,
-        ):
+        if self.storage.exists(self.METADATA_FILE):
             return
 
-        logger.info(
-            "Creating repository metadata."
-        )
+        logger.info("Creating repository metadata.")
 
-        metadata = pd.DataFrame(
-            columns=self.METADATA_COLUMNS,
-        )
+        metadata = pd.DataFrame(columns=self.METADATA_COLUMNS)
 
-        self.storage.save_csv(
-            metadata,
-            self.METADATA_FILE,
-        )
+        self.storage.save_csv(metadata, self.METADATA_FILE)
 
     # ==========================================================
     # Workbook Operations
@@ -203,15 +178,9 @@ class AttendanceRepository:
         Persist repository user data.
         """
 
-        logger.debug(
-            "Saving repository users (%d rows).",
-            len(users),
-        )
+        logger.debug("Saving repository users (%d rows).", len(users))
 
-        return self.storage.save_csv(
-            users,
-            self.USERS_FILE,
-        )
+        return self.storage.save_csv(users, self.USERS_FILE)
     
     # ------------------------------------------------------------------
     # Role management
@@ -229,25 +198,15 @@ class AttendanceRepository:
 
         if not self.storage.exists(self.ROLES_FILE):
 
-            logger.debug(
-                "Roles file not found: %s",
-                self.ROLES_FILE,
-            )
+            logger.debug("Roles file not found: %s",self.ROLES_FILE)
 
             return {}
 
-        logger.debug(
-            "Loading repository roles."
-        )
+        logger.debug("Loading repository roles.")
 
-        return self.storage.load_json(
-            self.ROLES_FILE,
-        )
+        return self.storage.load_json(self.ROLES_FILE)
 
-    def save_roles(
-        self,
-        roles: dict,
-    ):
+    def save_roles(self, roles: dict):
         """
         Persist repository role definitions.
 
@@ -262,14 +221,9 @@ class AttendanceRepository:
             Storage location of the saved JSON file.
         """
 
-        logger.debug(
-            "Saving repository roles."
-        )
+        logger.debug("Saving repository roles.")
 
-        return self.storage.save_json(
-            roles,
-            self.ROLES_FILE,
-        )
+        return self.storage.save_json(roles, self.ROLES_FILE)
 
     # ------------------------------------------------------------------
     # Company Management
@@ -286,26 +240,16 @@ class AttendanceRepository:
 
         if not self.storage.exists(self.COMPANIES_FILE):
 
-            logger.debug(
-                "Companies file not found: %s",
-                self.COMPANIES_FILE,
-            )
+            logger.debug("Companies file not found: %s", self.COMPANIES_FILE)
 
             return {}
 
-        logger.debug(
-            "Loading repository companies."
-        )
+        logger.debug("Loading repository companies.")
 
-        return self.storage.load_json(
-            self.COMPANIES_FILE,
-        )
+        return self.storage.load_json(self.COMPANIES_FILE)
 
 
-    def save_companies(
-        self,
-        companies: dict,
-    ):
+    def save_companies(self, companies: dict):
         """
         Persist repository company configuration.
 
@@ -320,15 +264,9 @@ class AttendanceRepository:
             Storage location of the saved JSON file.
         """
 
-        logger.debug(
-            "Saving repository companies (%d companies).",
-            len(companies.get("companies", {})),
-        )
+        logger.debug("Saving repository companies (%d companies).", len(companies.get("companies", {})))
 
-        return self.storage.save_json(
-            companies,
-            self.COMPANIES_FILE,
-        )
+        return self.storage.save_json(companies, self.COMPANIES_FILE)
     # ------------------------------------------------------------------
     # Metadata operations
     # ------------------------------------------------------------------
@@ -345,13 +283,9 @@ class AttendanceRepository:
 
         self.ensure_metadata()
 
-        logger.debug(
-            "Loading repository metadata."
-        )
+        logger.debug("Loading repository metadata.")
 
-        return self.storage.load_csv(
-            self.METADATA_FILE,
-        )
+        return self.storage.load_csv(self.METADATA_FILE)
 
     def save_metadata(
         self,
@@ -366,15 +300,9 @@ class AttendanceRepository:
             Upload history dataframe.
         """
 
-        logger.debug(
-            "Saving repository metadata (%d rows).",
-            len(metadata),
-        )
+        logger.debug("Saving repository metadata (%d rows).", len(metadata))
 
-        self.storage.save_csv(
-            metadata,
-            self.METADATA_FILE,
-        )
+        self.storage.save_csv(metadata, self.METADATA_FILE)
 
     def add_metadata(
         self,
@@ -389,10 +317,7 @@ class AttendanceRepository:
         metadata = self.load_metadata()
 
         if filename in metadata["Filename"].values:
-            logger.debug(
-                "Metadata already exists for %s",
-                filename,
-            )
+            logger.debug("Metadata already exists for %s", filename)
             return
 
         company = detect_company(filename)
@@ -426,18 +351,11 @@ class AttendanceRepository:
             "MonthlyRecords": "",
         }
 
-        metadata.loc[
-            len(metadata)
-        ] = new_row
+        metadata.loc[len(metadata)] = new_row
 
-        self.save_metadata(
-            metadata,
-        )
+        self.save_metadata(metadata)
 
-        logger.info(
-            "Metadata added for %s",
-            filename,
-        )
+        logger.info("Metadata added for %s", filename)
 
     def update_metadata(
         self,
@@ -455,16 +373,11 @@ class AttendanceRepository:
 
         metadata = self.load_metadata()
 
-        matches = metadata.index[
-            metadata["Filename"] == filename
-        ]
+        matches = metadata.index[metadata["Filename"] == filename]
 
         if len(matches) == 0:
 
-            logger.warning(
-                "No metadata found for %s",
-                filename,
-            )
+            logger.warning("No metadata found for %s", filename)
 
             return
 
@@ -481,14 +394,9 @@ class AttendanceRepository:
         if year is not None:
             metadata.loc[idx, "Year"] = year
 
-        self.save_metadata(
-            metadata,
-        )
+        self.save_metadata(metadata)
 
-        logger.info(
-            "Metadata updated for %s",
-            filename,
-        )
+        logger.info("Metadata updated for %s", filename)
 
     def remove_metadata(
         self,
@@ -502,27 +410,17 @@ class AttendanceRepository:
 
         original_rows = len(metadata)
 
-        metadata = metadata[
-            metadata["Filename"] != filename
-        ]
+        metadata = metadata[metadata["Filename"] != filename]
 
         if len(metadata) == original_rows:
 
-            logger.warning(
-                "Metadata not found for %s",
-                filename,
-            )
+            logger.warning("Metadata not found for %s", filename)
 
             return False
 
-        self.save_metadata(
-            metadata,
-        )
+        self.save_metadata(metadata)
 
-        logger.info(
-            "Metadata removed for %s",
-            filename,
-        )
+        logger.info("Metadata removed for %s", filename)
 
         return True
 
@@ -542,10 +440,7 @@ class AttendanceRepository:
 
         self.ensure_repository()
 
-        files = self.storage.list_files(
-            self.RAW_FOLDER,
-            pattern="*.xlsx",
-        )
+        files = self.storage.list_files(self.RAW_FOLDER, pattern="*.xlsx")
 
         repository = []
 
@@ -557,16 +452,11 @@ class AttendanceRepository:
                 else str(item)
             )
 
-            repository.append(
-                Path(self.RAW_FOLDER) / name
-            )
+            repository.append(Path(self.RAW_FOLDER) / name)
 
         repository.sort()
 
-        logger.debug(
-            "Repository contains %d workbook(s).",
-            len(repository),
-        )
+        logger.debug("Repository contains %d workbook(s).", len(repository))
 
         return repository
 
@@ -578,9 +468,7 @@ class AttendanceRepository:
         Check whether a workbook already exists.
         """
 
-        return self.storage.exists(
-            f"{self.RAW_FOLDER}/{filename}"
-        )
+        return self.storage.exists(f"{self.RAW_FOLDER}/{filename}")
 
     def save_raw_workbook(self,uploaded_file,):
         """
@@ -597,23 +485,13 @@ class AttendanceRepository:
 
     def save_processed_data(self,daily,monthly):
 
-        logger.info(
-            "Daily rows: %d | Monthly rows: %d",
-            len(daily),
-            len(monthly),
-        )
+        logger.info("Daily rows: %d | Monthly rows: %d", len(daily), len(monthly))
 
-        self.storage.save_dataframe(
-            daily,
-            f"{self.PROCESSED_FOLDER}/EmployeeDaily.xlsx",
-        )
+        self.storage.save_dataframe(daily, f"{self.PROCESSED_FOLDER}/EmployeeDaily.xlsx")
 
         logger.info("EmployeeDaily.xlsx saved")
 
-        self.storage.save_dataframe(
-            monthly,
-            f"{self.PROCESSED_FOLDER}/EmployeeMonthly.xlsx",
-        )
+        self.storage.save_dataframe(monthly, f"{self.PROCESSED_FOLDER}/EmployeeMonthly.xlsx")
 
         logger.info("EmployeeMonthly.xlsx saved")
 
@@ -632,13 +510,9 @@ class AttendanceRepository:
         """
 
         return (
-            self.storage.exists(
-                f"{self.PROCESSED_FOLDER}/EmployeeDaily.xlsx"
-            )
+            self.storage.exists(f"{self.PROCESSED_FOLDER}/EmployeeDaily.xlsx")
             and
-            self.storage.exists(
-                f"{self.PROCESSED_FOLDER}/EmployeeMonthly.xlsx"
-            )
+            self.storage.exists(f"{self.PROCESSED_FOLDER}/EmployeeMonthly.xlsx")
         )
 
     def load_daily(self) -> pd.DataFrame:
@@ -656,9 +530,7 @@ class AttendanceRepository:
             If the processed dataset does not exist.
         """
 
-        relative_path = (
-            f"{self.PROCESSED_FOLDER}/EmployeeDaily.xlsx"
-        )
+        relative_path = (f"{self.PROCESSED_FOLDER}/EmployeeDaily.xlsx")
 
         if not self.storage.exists(relative_path):
 
@@ -667,13 +539,9 @@ class AttendanceRepository:
                 "Please upload and process an attendance report first."
             )
 
-        logger.debug(
-            "Loading processed daily dataset."
-        )
+        logger.debug("Loading processed daily dataset.")
 
-        dataframe = self.storage.load_dataframe(
-            relative_path,
-        )
+        dataframe = self.storage.load_dataframe(relative_path)
 
         # --------------------------------------------------
         # Normalization
@@ -685,10 +553,7 @@ class AttendanceRepository:
                 dataframe["Date"]
             )
         ):
-            dataframe["Date"] = pd.to_datetime(
-                dataframe["Date"],
-                errors="coerce",
-            )
+            dataframe["Date"] = pd.to_datetime(dataframe["Date"], errors="coerce")
 
         return dataframe
 
@@ -707,9 +572,7 @@ class AttendanceRepository:
             If the processed dataset does not exist.
         """
 
-        relative_path = (
-            f"{self.PROCESSED_FOLDER}/EmployeeMonthly.xlsx"
-        )
+        relative_path = (f"{self.PROCESSED_FOLDER}/EmployeeMonthly.xlsx")
 
         if not self.storage.exists(relative_path):
 
@@ -718,13 +581,9 @@ class AttendanceRepository:
                 "Please upload and process an attendance report first."
             )
 
-        logger.debug(
-            "Loading processed monthly dataset."
-        )
+        logger.debug("Loading processed monthly dataset.")
 
-        dataframe = self.storage.load_dataframe(
-            relative_path,
-        )
+        dataframe = self.storage.load_dataframe(relative_path)
 
         # --------------------------------------------------
         # Future normalization can be added here
@@ -740,9 +599,7 @@ class AttendanceRepository:
         if not self.processed_exists():
             return None
 
-        return self.storage.last_modified(
-            f"{self.PROCESSED_FOLDER}/EmployeeMonthly.xlsx"
-        )
+        return self.storage.last_modified(f"{self.PROCESSED_FOLDER}/EmployeeMonthly.xlsx")
 
     def copy_workbook(self,source):
         """
@@ -756,28 +613,17 @@ class AttendanceRepository:
             else Path(source).name
         )
 
-        destination = (
-            f"{self.RAW_FOLDER}/{filename}"
-        )
+        destination = (f"{self.RAW_FOLDER}/{filename}")
 
-        logger.info(
-            "Copying workbook %s",
-            filename,
-        )
+        logger.info("Copying workbook %s", filename)
 
         data = self.storage.read_bytes(source)
 
-        self.storage.write_bytes(
-            destination,
-            data,
-        )
+        self.storage.write_bytes(destination, data)
 
         return Path(destination)
 
-    def delete_workbook(
-        self,
-        filename: str,
-    ):
+    def delete_workbook(self, filename: str):
         """
         Delete a workbook from the repository.
         """
@@ -809,9 +655,7 @@ class AttendanceRepository:
 
             if not remaining_workbooks:
 
-                logger.info(
-                    "Repository is empty. Clearing processed datasets."
-                )
+                logger.info("Repository is empty. Clearing processed datasets.")
 
                 self.clear_processed_data()
 
@@ -819,10 +663,7 @@ class AttendanceRepository:
 
         except Exception as exc:
 
-            logger.exception(
-                "Unable to delete workbook %s",
-                filename,
-            )
+            logger.exception("Unable to delete workbook %s", filename)
 
             return (False, str(exc))
 
@@ -838,10 +679,7 @@ class AttendanceRepository:
         # Remove raw workbooks
         # --------------------------------------------------
 
-        files = self.storage.list_files(
-            self.RAW_FOLDER,
-            pattern="*.xlsx",
-        )
+        files = self.storage.list_files(self.RAW_FOLDER, pattern="*.xlsx")
 
         for workbook in files:
 
@@ -851,9 +689,7 @@ class AttendanceRepository:
                 else str(workbook)
             )
 
-            self.storage.delete(
-                f"{self.RAW_FOLDER}/{name}"
-            )
+            self.storage.delete(f"{self.RAW_FOLDER}/{name}")
 
             removed += 1
 
@@ -867,21 +703,13 @@ class AttendanceRepository:
         # Reset metadata
         # --------------------------------------------------
 
-        empty_metadata = pd.DataFrame(
-            columns=self.METADATA_COLUMNS,
-        )
+        empty_metadata = pd.DataFrame(columns=self.METADATA_COLUMNS)
 
-        self.storage.save_csv(
-            empty_metadata,
-            self.METADATA_FILE,
-        )
+        self.storage.save_csv(empty_metadata, self.METADATA_FILE)
 
         logger.info("Repository metadata reset.")
 
-        logger.info(
-            "Repository cleared (%d workbook(s)).",
-            removed,
-        )
+        logger.info("Repository cleared (%d workbook(s)).", removed)
 
     def clear_processed_data(self) -> None:
         """
@@ -901,17 +729,11 @@ class AttendanceRepository:
 
                 self.storage.delete(path)
 
-                logger.info(
-                    "Deleted processed dataset: %s",
-                    path,
-                )
+                logger.info("Deleted processed dataset: %s", path)
 
                 removed += 1
 
-        logger.info(
-            "Processed repository cleared (%d dataset(s)).",
-            removed,
-        )
+        logger.info("Processed repository cleared (%d dataset(s)).", removed)
 
     def rebuild_repository(self):
         from utils.parser import process_reports
@@ -924,9 +746,7 @@ class AttendanceRepository:
 
         if not repository:
 
-            logger.warning(
-                "Repository is empty."
-            )
+            logger.warning("Repository is empty.")
 
             return (
                 None,
@@ -934,18 +754,13 @@ class AttendanceRepository:
                 [],
             )
 
-        logger.info(
-            "Processing %d workbook(s).",
-            len(repository),
-        )
+        logger.info("Processing %d workbook(s).", len(repository))
 
         daily, monthly, summary = process_reports(repository)
 
         self.save_processed_data(daily,monthly)
 
-        logger.info(
-            "Repository rebuild completed."
-        )
+        logger.info("Repository rebuild completed.")
 
         return daily, monthly, summary
 
@@ -954,12 +769,9 @@ class AttendanceRepository:
 # Singleton Repository
 # ==============================================================================
 
-logger.info(
-    "Creating repository singleton."
-)
+logger.info("Creating repository singleton.")
 
 repo = AttendanceRepository()
-
 
 # ==============================================================================
 # Backward-compatible wrapper functions

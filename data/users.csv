@@ -1,9 +1,12 @@
 Username,Password,Name,Role,Company,Active
 subendu,$2b$12$CWzPfyLaehTF20UXGh08TOkwwAvYBQzsG9a4p48J9Pb9NenOqWjTW,Subendu Kumar,Admin,ALL,TRUE
 jyoti,$2b$12$w6Nk500LRGOsdNhNj3Vy7OgLxSLlH7B5am3/U5PZs7m5mmKbw46yO,Jyoti Yadav,Admin,ALL,TRUE
-Binay,$2b$12$F2GqPdvF0CblQ1tdG7ByJue9zxxSD7g4OnQTcuBJr4v5DqQknV9ni,Binay Singh,MD,ALL,TRUE
+binay,$2b$12$F2GqPdvF0CblQ1tdG7ByJue9zxxSD7g4OnQTcuBJr4v5DqQknV9ni,Binay Singh,MD,ALL,TRUE
 vivek,$2b$12$B58uevV0fQX2oHeypNfUdOhpn.oKPIuFc.NEBN80gXwmBnaOsDjee,Vivek Das,HR,ALL,TRUE
 suraj,$2b$12$9sXNmLJ5SlfrObDtuK5JMOSY6AK.4HqOa/LtRMsiwDF8bNckPUb/i,Suraj Kumar,GM,GOV,TRUE
-Ashish,$2b$12$TMpmdnG6iAV./T647fpp0eh72WoZfXosJyTtCwEM0UAnKKkA/vCdC,Ashish Agarwal,GM,NLKL,TRUE
-Akash,$2b$12$MMUDB52KJ7gwSsGOqC1lXu49pyrhHB5TG6quz3.qp1gQO/F0sUFxq,Akash Agarwal,GM,KAAL,TRUE
-Sujit,$2b$12$2uyuFppeyBM3VmD465q2AOd8PGbhUksM0bvL4zI3BkHkX8AeconEu,Sujit kumar,GM,RKL,TRUE
+sujit,$2b$12$2uyuFppeyBM3VmD465q2AOd8PGbhUksM0bvL4zI3BkHkX8AeconEu,Sujit kumar,GM,RKL,TRUE
+akash,$2b$12$MMUDB52KJ7gwSsGOqC1lXu49pyrhHB5TG6quz3.qp1gQO/F0sUFxq,Akash Agarwal,GM,KAAL,TRUE
+ashish,$2b$12$TMpmdnG6iAV./T647fpp0eh72WoZfXosJyTtCwEM0UAnKKkA/vCdC,Ashish Agarwal,GM,NLKL,TRUE
+vedant,$2b$12$IF3xPDklL2gddEBpsgi2AeUTtKRs5MWPsKpuMUWZILBAQdBzmUfKO,Vedant Singh,Director,ALL,TRUE
+vibhor,$2b$12$tRwXj/GEgLGqSeW7e9nHLuyN9xJkjskIz4WBf..SCTdWWvEc8P8mu,Vibhor Singh,Director,ALL, TRUE
+pratishruti,$2b$12$4fiDNFvl.hLRMbZYPrjaEu1lJ.fX8evBbehi1qW5S0uIN2sFXD5HC,Pratishruti Nayak,HR,ALL,TRUE

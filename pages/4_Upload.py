@@ -1,5 +1,4 @@
 import streamlit as st
-
 from utils.validation import validate_file
 from utils.company_detector import detect_company
 from services.upload_service import upload_service
@@ -16,13 +15,9 @@ from utils.repository import (
     remove_metadata,
 )
 from services.attendance_service import attendance_service
-
 from auth.layout import render_header
-
 from auth.permissions import require_permission
-
 require_permission("upload")
-
 
 # ==========================================================
 # CONSTANTS
@@ -144,11 +139,7 @@ if uploaded_files:
         # Create upload metadata
         # ------------------------------------------
 
-        add_metadata(
-            filename=workbook.name,
-            filesize_kb=round(getattr(workbook, "size", 0) / 1024, 2),
-            status="Imported",
-        )
+        add_metadata(filename=workbook.name, filesize_kb=round(getattr(workbook, "size", 0) / 1024, 2), status="Imported")
 
         new_files.append(workbook.name)
 
@@ -166,12 +157,12 @@ if uploaded_files:
 
     st.info(
         f"""
-Repository Files : {len(repository)}
+        Repository Files : {len(repository)}
 
-New Files Added : {len(new_files)}
+        New Files Added : {len(new_files)}
 
-Duplicate Files : {len(duplicate_files)}
-"""
+        Duplicate Files : {len(duplicate_files)}
+        """
     )
 
     # ==========================================================
@@ -205,12 +196,12 @@ Duplicate Files : {len(duplicate_files)}
 
     st.info(
         f"""
-Repository Files : {len(repository)}
+        Repository Files : {len(repository)}
 
-Valid Workbooks : {len(valid_files)}
+        Valid Workbooks : {len(valid_files)}
 
-Invalid Workbooks : {len(invalid_files)}
-"""
+        Invalid Workbooks : {len(invalid_files)}
+        """
     )
 
     # ==========================================================
@@ -219,7 +210,6 @@ Invalid Workbooks : {len(invalid_files)}
 
     if not valid_files:
         st.warning("No valid attendance workbooks were found.")
-
         st.stop()
 
     # ==========================================================
@@ -250,12 +240,12 @@ Invalid Workbooks : {len(invalid_files)}
 
     st.success(
         f"""
-✅ Repository processed successfully.
+        ✅ Repository processed successfully.
 
-Workbooks Processed : {len(valid_files)}
+        Workbooks Processed : {len(valid_files)}
 
-Repository Size : {len(repository)}
-"""
+        Repository Size : {len(repository)}
+        """
     )
 
     st.balloons()
@@ -272,18 +262,18 @@ Repository Size : {len(repository)}
 
     st.info(
         f"""
-Departments      : {monthly["Department"].nunique()}
+        Departments      : {monthly["Department"].nunique()}
 
-Employees        : {monthly["EmpCode"].nunique()}
+        Employees        : {monthly["EmpCode"].nunique()}
 
-Repository Files : {len(repository)}
+        Repository Files : {len(repository)}
 
-Months Imported  : {", ".join(imported_months)}
+        Months Imported  : {", ".join(imported_months)}
 
-Daily Records    : {len(daily):,}
+        Daily Records    : {len(daily):,}
 
-Monthly Records  : {len(monthly):,}
-"""
+        Monthly Records  : {len(monthly):,}
+        """
     )
 
     # ==========================================================

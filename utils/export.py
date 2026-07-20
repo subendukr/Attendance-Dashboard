@@ -27,14 +27,9 @@ def dataframe_to_excel(
 
     buffer = BytesIO()
 
-    df.to_excel(
-        buffer,
-        index=False,
-        engine="openpyxl",
-    )
+    df.to_excel(buffer, index=False, engine="openpyxl")
 
     return buffer.getvalue()
-
 
 # ==========================================================
 # Export DataFrame to CSV
@@ -57,6 +52,4 @@ def dataframe_to_csv(
         CSV file encoded as UTF-8.
     """
 
-    return df.to_csv(
-        index=False,
-    ).encode("utf-8")
+    return df.to_csv(index=False).encode("utf-8")

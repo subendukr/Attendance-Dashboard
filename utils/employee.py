@@ -80,12 +80,9 @@ def employee_calendar(df):
 
     emp = df.sort_values("Date")
 
-    calendar = pd.DataFrame(
-        [emp["Status"].values], columns=[d.strftime("%d") for d in emp["Date"]]
-    )
+    calendar = pd.DataFrame([emp["Status"].values], columns=[d.strftime("%d") for d in emp["Date"]])
 
     return calendar
-
 
 # =====================================================
 # MONTHLY HISTORY
@@ -96,9 +93,7 @@ def employee_history(df, empcode):
 
     emp = df[df["EmpCode"].astype(str).str.upper() == str(empcode).upper()]
 
-    history = emp.groupby(emp["Date"].dt.to_period("M")).agg(
-        {"Status": lambda x: (x == "P").sum()}
-    )
+    history = emp.groupby(emp["Date"].dt.to_period("M")).agg({"Status": lambda x: (x == "P").sum()})
 
     history.columns = ["Present"]
 
@@ -108,11 +103,9 @@ def employee_history(df, empcode):
 
     return history
 
-
 # =====================================================
 # DAILY LOG
 # =====================================================
-
 
 def employee_daily_log(df):
 

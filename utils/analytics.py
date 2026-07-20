@@ -58,12 +58,7 @@ def minutes_to_time(total_minutes):
 
 def attendance_trend(df):
 
-    trend = (
-        df.groupby(["Year", "Month"])
-        .agg({"Present": "sum", "Absent": "sum", "Leave": "sum"})
-        .reset_index()
-    )
-
+    trend = (df.groupby(["Year", "Month"]).agg({"Present": "sum", "Absent": "sum", "Leave": "sum"}).reset_index())
     return trend
 
 
@@ -192,9 +187,7 @@ def department_performance(df):
 
     total = summary["Present"] + summary["Absent"] + summary["Leave"]
 
-    summary["Attendance %"] = (
-        summary["Present"].div(total.replace(0, pd.NA)).fillna(0) * 100
-    ).round(2)
+    summary["Attendance %"] = (summary["Present"].div(total.replace(0, pd.NA)).fillna(0) * 100).round(2)
 
     return summary
 
@@ -220,8 +213,6 @@ def designation_performance(df):
 
     total = summary["Present"] + summary["Absent"] + summary["Leave"]
 
-    summary["Attendance %"] = (
-        summary["Present"].div(total.replace(0, pd.NA)).fillna(0) * 100
-    ).round(2)
+    summary["Attendance %"] = (summary["Present"].div(total.replace(0, pd.NA)).fillna(0) * 100).round(2)
 
     return summary

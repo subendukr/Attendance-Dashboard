@@ -1,15 +1,12 @@
 import streamlit as st
-
+import pandas as pd
 
 from utils.data_access import load_daily_data
 from utils.filters import filter_daily
 from utils.metrics import employee_metrics
 from utils.metrics import time_metrics
 
-from utils.export import (
-    dataframe_to_csv,
-    dataframe_to_excel,
-)
+from utils.export import (dataframe_to_csv, dataframe_to_excel)
 
 from utils.company_ui import is_global_user, show_company_column
 
@@ -149,9 +146,7 @@ Selected Period : {selected_month} {selected_year}
 # APPLY FILTERS
 # ==========================================================
 
-employee_df = filter_daily(
-    daily, empcode=selected_empcode, year=selected_year, month=selected_month
-)
+employee_df = filter_daily(daily, empcode=selected_empcode, year=selected_year, month=selected_month)
 
 employee_df = employee_df.sort_values("Date")
 
@@ -161,7 +156,6 @@ employee_df = employee_df.sort_values("Date")
 
 if employee_df.empty:
     st.warning("No attendance records found.")
-
     st.stop()
 
 
@@ -289,6 +283,13 @@ st.markdown(f"## 📋 Daily Attendance Log ({selected_month} {selected_year})")
 
 daily_log = employee_daily_log(employee_df)
 
+# Format Date column (remove time component)
+if "Date" in daily_log.columns:
+    daily_log["Date"] = (
+        pd.to_datetime(daily_log["Date"])
+        .dt.strftime("%Y-%m-%d")
+    )
+
 # ----------------------------------------------------------
 # FILTERS
 # ----------------------------------------------------------
@@ -296,9 +297,7 @@ daily_log = employee_daily_log(employee_df)
 filter_col, search_col = st.columns(2)
 
 with filter_col:
-    status_filter = st.selectbox(
-        "Status Filter", ["All", "P", "A", "L", "H", "WO", "WFH"]
-    )
+    status_filter = st.selectbox("Status Filter", ["All", "P", "A", "L", "H", "WO", "WFH"])
 
 with search_col:
     search = st.text_input(
@@ -316,9 +315,7 @@ if status_filter != "All":
 if search:
     searchable = daily_log[["Date", "Shift", "InTime", "OutTime"]].astype(str)
 
-    mask = searchable.apply(
-        lambda col: col.str.contains(search, case=False, na=False)
-    ).any(axis=1)
+    mask = searchable.apply(lambda col: col.str.contains(search, case=False, na=False)).any(axis=1)
 
     daily_log = daily_log.loc[mask]
 
@@ -344,11 +341,7 @@ with st.container(border=True):
 
     with c1:
         st.download_button(
-            "⬇ Download CSV",
-            csv,
-            file_name=f"{selected_empcode}_{selected_month}_{selected_year}.csv",
-            mime="text/csv",
-            width="stretch",
+            "⬇ Download CSV", csv, file_name=f"{selected_empcode}_{selected_month}_{selected_year}.csv", mime="text/csv", width="stretch",
         )
 
     with c2:
@@ -414,6 +407,4 @@ if show_company_column():
 last_updated = attendance_service.get_processed_last_updated()
 
 if last_updated:
-    st.caption(
-        f"Processed Data Updated: {last_updated:%d-%b-%Y %H:%M}"
-    )
+    st.caption(f"Processed Data Updated: {last_updated:%d-%b-%Y %H:%M}")

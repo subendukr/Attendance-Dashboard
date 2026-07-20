@@ -35,14 +35,10 @@ def render_sidebar_filters(monthly, title="📂 Dashboard Filters"):
     filtered_df = monthly.copy()
 
     if selected_year is not None:
-        filtered_df = filtered_df[
-            filtered_df["Year"] == selected_year
-        ]
+        filtered_df = filtered_df[filtered_df["Year"] == selected_year]
 
     if selected_month is not None:
-        filtered_df = filtered_df[
-            filtered_df["Month"] == selected_month
-        ]
+        filtered_df = filtered_df[filtered_df["Month"] == selected_month]
 
     # ------------------------
     # Company
@@ -50,37 +46,22 @@ def render_sidebar_filters(monthly, title="📂 Dashboard Filters"):
     selected_company = []
 
     if is_global_user():
-        companies = sorted(
-            filtered_df["Company"].dropna().unique()
-        )
+        companies = sorted(filtered_df["Company"].dropna().unique())
 
-        selected_company = st.sidebar.multiselect(
-            "Company",
-            companies,
-            default=companies,
-        )
+        selected_company = st.sidebar.multiselect("Company", companies, default=companies)
 
         if selected_company:
-            filtered_df = filtered_df[
-                filtered_df["Company"].isin(selected_company)
-            ]
+            filtered_df = filtered_df[filtered_df["Company"].isin(selected_company)]
 
     # ------------------------
     # Department
     # ------------------------
-    departments = sorted(
-        filtered_df["Department"].dropna().unique()
-    )
+    departments = sorted(filtered_df["Department"].dropna().unique())
 
-    selected_department = st.sidebar.multiselect(
-        "Department",
-        departments,
-    )
+    selected_department = st.sidebar.multiselect("Department", departments)
 
     if selected_department:
-        filtered_df = filtered_df[
-            filtered_df["Department"].isin(selected_department)
-        ]
+        filtered_df = filtered_df[filtered_df["Department"].isin(selected_department)]
 
     # ------------------------
     # Designation

@@ -82,9 +82,7 @@ def find_department(df):
             text = clean_value(df.iloc[r, c])
 
             if "Department" in text:
-                return (
-                    text.replace("Department :-", "").replace("Department:", "").strip()
-                )
+                return (text.replace("Department :-", "").replace("Department:", "").strip())
 
     return ""
 
@@ -360,11 +358,7 @@ def extract_daily(filepath):
 
         return daily
 
-    daily = (
-        daily.drop_duplicates(subset=["EmpCode", "Date"])
-        .sort_values(["EmpCode", "Date"])
-        .reset_index(drop=True)
-    )
+    daily = (daily.drop_duplicates(subset=["EmpCode", "Date"]).sort_values(["EmpCode", "Date"]).reset_index(drop=True))
 
     print()
 
@@ -448,11 +442,7 @@ def extract_monthly(filepath):
 
     monthly[numeric_columns] = monthly[numeric_columns].fillna(0)
 
-    monthly = (
-        monthly.drop_duplicates(subset=["EmpCode", "Year", "Month"])
-        .sort_values(["Department", "EmpCode"])
-        .reset_index(drop=True)
-    )
+    monthly = (monthly.drop_duplicates(subset=["EmpCode", "Year", "Month"]).sort_values(["Department", "EmpCode"]).reset_index(drop=True))
 
     print(f"Total Monthly Records : {len(monthly)}")
 
@@ -507,9 +497,7 @@ def process_report(filepath, save=True):
     company = detect_company(getattr(filepath, "name", str(filepath)))
 
     if company is None:
-        raise ValueError(
-            f"Unable to detect company from {getattr(filepath, 'name', filepath)}"
-        )
+        raise ValueError(f"Unable to detect company from {getattr(filepath, 'name', filepath)}")
 
     # --------------------------------------------------
     # DAILY
@@ -597,9 +585,7 @@ def process_reports(file_list):
 
     daily = pd.concat(all_daily, ignore_index=True) if all_daily else pd.DataFrame()
 
-    monthly = (
-        pd.concat(all_monthly, ignore_index=True) if all_monthly else pd.DataFrame()
-    )
+    monthly = (pd.concat(all_monthly, ignore_index=True) if all_monthly else pd.DataFrame())
 
     # ------------------------------------------
     # Remove duplicates
@@ -615,9 +601,7 @@ def process_reports(file_list):
 
     daily = daily.sort_values(["EmpCode", "Date"]).reset_index(drop=True)
 
-    monthly = monthly.sort_values(
-        ["Department", "EmpCode", "Year", "Month"]
-    ).reset_index(drop=True)
+    monthly = monthly.sort_values(["Department", "EmpCode", "Year", "Month"]).reset_index(drop=True)
 
     # ------------------------------------------
     # Save

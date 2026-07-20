@@ -21,9 +21,7 @@ from utils.charts.department import (
 
 require_login()
 
-render_header(
-    title="Neelkamal Steel Industry", subtitle="Employee Attendance Dashboard"
-)
+render_header(title="Neelkamal Steel Industry", subtitle="Employee Attendance Dashboard")
 
 monthly = attendance_service.get_monthly_data()
 
