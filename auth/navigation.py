@@ -44,21 +44,6 @@ PAGE_CONFIG = [
     },
 ]
 
-
-# ==========================================================
-# SIDEBAR
-# ==========================================================
-
-
-def sidebar():
-
-    st.sidebar.markdown("Neelkamal")
-
-    st.sidebar.caption("Attendance Dashboard")
-
-    st.sidebar.divider()
-
-
 # ==========================================================
 # BUILD PAGE LIST
 # ==========================================================
@@ -81,8 +66,6 @@ def build_pages():
 
 
 def create_navigation():
-
-    sidebar()
 
     pages = build_pages()
 

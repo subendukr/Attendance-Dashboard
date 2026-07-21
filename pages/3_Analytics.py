@@ -580,3 +580,8 @@ Powered by Streamlit
     )
 
 st.caption("© Neelkamal Steel Industry. All Rights Reserved.")
+
+from utils.footer import render_footer
+
+# At the end of each page
+render_footer()

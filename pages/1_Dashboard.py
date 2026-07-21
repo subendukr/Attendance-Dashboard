@@ -145,3 +145,8 @@ Generated from processed attendance data.
 © Neelkamal Steel Industry
 """
 )
+
+from utils.footer import render_footer
+
+# At the end of each page
+render_footer()

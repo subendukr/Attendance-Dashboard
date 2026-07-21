@@ -408,3 +408,8 @@ last_updated = attendance_service.get_processed_last_updated()
 
 if last_updated:
     st.caption(f"Processed Data Updated: {last_updated:%d-%b-%Y %H:%M}")
+
+from utils.footer import render_footer
+
+# At the end of each page
+render_footer()
