@@ -5,11 +5,9 @@ from utils.data_access import load_daily_data
 from utils.filters import filter_daily
 from utils.metrics import employee_metrics
 from utils.metrics import time_metrics
-
 from utils.export import (dataframe_to_csv, dataframe_to_excel)
-
 from utils.company_ui import is_global_user, show_company_column
-
+from utils.charts.employee import employee_history_chart, employee_status_pie
 from config.company_config import company_details
 
 from auth.layout import render_header
@@ -24,9 +22,8 @@ from utils.employee import (
     employee_daily_log,
 )
 
-from utils.charts.employee import employee_history_chart, employee_status_pie
-
 from services.attendance_service import attendance_service
+from utils.ui_messages import show_no_data_message
 
 def status_style(value):
 
@@ -53,7 +50,11 @@ require_login()
 
 render_header(title="Neelkamal Steel Industry", subtitle="Employee Search")
 
+if not attendance_service.has_processed_data():
+    show_no_data_message()
+
 daily = load_daily_data()
+
 # ==========================================================
 # SIDEBAR
 # ==========================================================

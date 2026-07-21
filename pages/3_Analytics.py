@@ -5,6 +5,7 @@ from auth.permissions import require_login
 from utils.metrics import dashboard_metrics
 from utils.company_ui import show_company_column
 from utils.ui_filters import render_sidebar_filters
+from utils.ui_messages import show_no_data_message
 from utils.filters import filter_monthly, filter_daily
 from analytics.attendance import monthly_attendance_trend
 from services.attendance_service import attendance_service
@@ -36,6 +37,9 @@ from utils.charts.department import (
 require_login()
 
 render_header(title="Neelkamal Steel Industry", subtitle="Attendance Analytics")
+
+if not attendance_service.has_processed_data():
+    show_no_data_message()
 
 monthly = attendance_service.get_monthly_data()
 daily = attendance_service.get_daily_data()

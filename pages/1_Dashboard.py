@@ -5,6 +5,7 @@ from utils.metrics import dashboard_metrics
 from auth.permissions import require_login
 from services.attendance_service import attendance_service
 from utils.ui_filters import render_sidebar_filters
+from utils.ui_messages import show_no_data_message
 
 from utils.charts.attendance import (
     attendance_summary_chart,
@@ -26,23 +27,9 @@ render_header(title="Neelkamal Steel Industry", subtitle="Employee Attendance Da
 monthly = attendance_service.get_monthly_data()
 
 if not attendance_service.has_processed_data():
+    show_no_data_message()
 
-    st.info(
-        """
-## 📂 No Attendance Data Available
-
-No processed attendance repository exists yet.
-
-### To get started:
-Please contact the HR Department to upload the Monthly and Daily Attendance records.
-
-### Contact:
-* 📞 7488773716
-* 📧 subendu.neelkamal110@gmail.com
-"""
-    )
-
-    st.stop()
+monthly = attendance_service.get_monthly_data()
 
 (
     selected_year,
