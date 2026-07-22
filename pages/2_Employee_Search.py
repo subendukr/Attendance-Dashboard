@@ -100,11 +100,17 @@ employees["EmpCode"] = employees["EmpCode"].astype(str)
 
 employees["Name"] = employees["Name"].astype(str)
 
-employees["Display"] = employees["Name"] + " (" + employees["EmpCode"] + ")"
+employees["Display"] = (employees["Name"] + " (" + employees["EmpCode"] + ")")
 
-selected = st.sidebar.selectbox("Select Employee", employees["Display"])
+employee_options = ["-- Select Employee --"] + employees["Display"].tolist()
 
-selected_empcode = selected.split("(")[1].replace(")", "")
+selected = st.sidebar.selectbox("Select Employee", employee_options)
+
+if selected == "-- Select Employee --":
+    st.info("👈 Please select an employee from the sidebar to view attendance details.")
+    st.stop()
+
+selected_empcode = selected.rsplit("(", 1)[1].replace(")", "").strip()
 # ==========================================================
 # AVAILABLE YEARS
 # ==========================================================
@@ -183,10 +189,13 @@ with left:
         st.write("**Department:**", profile["Department"])
 
 with right:
+    st.write("**Employee Code:**", selected_empcode)
+
     if "Designation" in profile:
         st.write("**Designation:**", profile["Designation"])
 
-    st.write("**Shift:**", profile["Shift"])
+    if "Shift" in profile:
+        st.write("**Shift:**", profile["Shift"])
 
 st.markdown("---")
 
@@ -357,21 +366,6 @@ with st.container(border=True):
     st.caption(f"Exporting {len(daily_log)} attendance record(s).")
 
 # ==========================================================
-# DATA SUMMARY
-# ==========================================================
-
-st.markdown("---")
-
-summary1, summary2, summary3 = st.columns(3)
-
-summary1.metric("Attendance Records", len(employee_df))
-
-summary2.metric("Present Days", attendance["present"])
-
-summary3.metric("Current Shift", profile["Shift"])
-
-
-# ==========================================================
 # FOOTER
 # ==========================================================
 
@@ -383,12 +377,6 @@ st.caption(
 Employee Search Version : v1.0
 
 Employee : {profile.get("Name", "")}
-
-Employee Code : {selected_empcode}
-
-Department : {profile.get("Department", "")}
-
-Designation : {profile.get("Designation", "")}
 
 Showing : {selected_month} {selected_year}
 

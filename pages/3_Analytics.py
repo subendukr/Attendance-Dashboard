@@ -3,17 +3,13 @@ from datetime import datetime
 from auth.layout import render_header
 from auth.permissions import require_login
 from utils.metrics import dashboard_metrics
-from utils.company_ui import show_company_column
 from utils.ui_filters import render_sidebar_filters
 from utils.ui_messages import show_no_data_message
 from utils.filters import filter_monthly, filter_daily
 from analytics.attendance import monthly_attendance_trend
 from services.attendance_service import attendance_service
+from utils.charts.department import department_status_chart
 
-from utils.export import (
-    dataframe_to_csv,
-    dataframe_to_excel,
-)
 from utils.analytics import (
     department_performance,
     designation_performance,
@@ -25,11 +21,6 @@ from utils.charts.attendance import (
     attendance_pie_chart,
     attendance_trend_chart,
     attendance_count_chart,
-)
-from utils.charts.department import (
-    department_attendance_percentage,
-    department_employee_chart,
-    department_status_chart,
 )
 # ==========================================================
 # LOAD DATASETS
@@ -244,54 +235,6 @@ Attendance : **{month["AttendancePct"]:.2f}%**
 st.divider()
 
 # ==========================================================
-# DEPARTMENT ANALYTICS
-# ==========================================================
-
-st.markdown("## 🏢 Department Analytics")
-
-st.caption("Department-wise attendance performance, workforce distribution and attendance behaviour.")
-
-# ==========================================================
-# DEPARTMENT OVERVIEW
-# ==========================================================
-
-st.subheader("Department Overview")
-
-avg_attendance = department_data["Attendance %"].mean()
-
-avg_paid_days = department_data["PaidDays"].mean()
-
-total_departments = department_data["Department"].nunique()
-
-total_employees = department_data["Employees"].sum()
-
-k1, k2, k3, k4 = st.columns(4)
-
-k1.metric("Departments", total_departments)
-
-k2.metric("Employees", total_employees)
-
-k3.metric("Average Attendance", f"{avg_attendance:.2f}%")
-
-k4.metric("Average Paid Days", f"{avg_paid_days:.2f}")
-
-# ==========================================================
-# DEPARTMENT ATTENDANCE %
-# ==========================================================
-
-st.subheader("Department Attendance %")
-
-st.plotly_chart(department_attendance_percentage(monthly_filtered), width="stretch")
-
-# ==========================================================
-# EMPLOYEE DISTRIBUTION
-# ==========================================================
-
-st.subheader("Employee Distribution")
-
-st.plotly_chart(department_employee_chart(monthly_filtered), width="stretch")
-
-# ==========================================================
 # PRESENT VS ABSENT VS LEAVE
 # ==========================================================
 
@@ -404,106 +347,6 @@ with right:
 st.divider()
 
 # ==========================================================
-# ANALYTICS REGISTER
-# ==========================================================
-
-st.markdown("## 📋 Analytics Register")
-
-st.caption("Search, review and export the filtered monthly attendance records.")
-
-search = st.text_input("🔍 Search Employee", placeholder="Employee Code, Name, Department or Designation...",)
-
-register = monthly_filtered.copy()
-
-# ==========================================================
-# SEARCH FILTER
-# ==========================================================
-
-if search:
-    searchable = register[["EmpCode", "Name", "Department", "Designation"]].astype(str)
-
-    mask = (
-        searchable["EmpCode"].str.contains(search, case=False, na=False)
-        | searchable["Name"].str.contains(search, case=False, na=False)
-        | searchable["Department"].str.contains(search, case=False, na=False)
-        | searchable["Designation"].str.contains(search, case=False, na=False)
-    )
-
-    register = register.loc[mask]
-
-# ==========================================================
-# REGISTER TABLE
-# ==========================================================
-
-display_columns = []
-
-if show_company_column():
-    display_columns.append("Company")
-
-display_columns.extend(
-    [
-        "EmpCode",
-        "Name",
-        "Department",
-        "Designation",
-        "Present",
-        "Absent",
-        "Leave",
-        "PaidDays",
-        "WorkHrs",
-        "OvTim",
-    ]
-)
-
-st.caption(
-    f"""
-Displaying {len(register):,} monthly records
-
-Employees : {register["EmpCode"].nunique()}
-
-Departments : {register["Department"].nunique()}
-"""
-)
-
-st.dataframe(register[display_columns], width="stretch", hide_index=True, height=450)
-
-st.divider()
-
-# ==========================================================
-# EXPORT REPORTS
-# ==========================================================
-
-st.markdown("## 📥 Export Reports")
-
-st.caption("Download the filtered analytics register.")
-
-csv_data = dataframe_to_csv(register)
-
-excel_data = dataframe_to_excel(register)
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.download_button(
-        "⬇ Download CSV",
-        csv_data,
-        file_name=f"Analytics_{selected_month}_{selected_year}.csv",
-        mime="text/csv",
-        width="stretch",
-    )
-
-with col2:
-    st.download_button(
-        "📥 Download Excel",
-        excel_data,
-        file_name=f"Analytics_{selected_month}_{selected_year}.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        width="stretch",
-    )
-
-st.divider()
-
-# ==========================================================
 # DATA INFORMATION
 # ==========================================================
 
@@ -537,24 +380,17 @@ Month : {selected_month}
 """
         )
 
-st.divider()
-
 # ==========================================================
 # PAGE SUMMARY
 # ==========================================================
 
 st.markdown("## 📌 Dashboard Summary")
 
-summary1, summary2, summary3, summary4 = st.columns(4)
+summary1, summary2 = st.columns(2)
 
-summary1.metric("Employees", register["EmpCode"].nunique())
+summary1.metric("Employees", monthly_filtered["EmpCode"].nunique())
 
-summary2.metric("Departments", register["Department"].nunique())
-
-summary3.metric("Records", len(register))
-
-summary4.metric("Attendance", f"{dashboard['attendance_pct']:.2f}%")
-
+summary2.metric("Departments", monthly_filtered["Department"].nunique())
 st.divider()
 
 # ==========================================================
@@ -564,13 +400,9 @@ st.divider()
 left, right = st.columns(2)
 
 with left:
-    st.caption(
-        """
-Neelkamal Attendance Dashboard
+    st.caption("""Dashboard Version 2.0""")
 
-Version 2.0
-"""
-    )
+    st.caption("© Neelkamal Steel Industry")
 
 with right:
     st.caption(
@@ -579,11 +411,8 @@ Generated
 
 {datetime.now():%d-%b-%Y %H:%M}
 
-Powered by Streamlit
 """
     )
-
-st.caption("© Neelkamal Steel Industry. All Rights Reserved.")
 
 from utils.footer import render_footer
 

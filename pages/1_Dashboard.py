@@ -16,6 +16,13 @@ from utils.charts.department import (
     department_employee_chart,
 )
 
+from utils.company_ui import show_company_column
+
+from utils.export import (
+    dataframe_to_csv,
+    dataframe_to_excel,
+)
+
 # ==========================================================
 # LOAD DATA
 # ==========================================================
@@ -116,16 +123,113 @@ st.markdown("## 👥 Department Overview")
 
 st.plotly_chart(department_employee_chart(filtered), width="stretch")
 
+st.divider()
+
+# ==========================================================
+# ANALYTICS REGISTER
+# ==========================================================
+
+st.markdown("## 📋 Analytics Register")
+
+st.caption("Search, review and export the filtered monthly attendance records.")
+
+search = st.text_input("🔍 Search Employee", placeholder="Employee Code, Name, Department or Designation...",)
+
+register = filtered.copy()
+
+# ==========================================================
+# SEARCH FILTER
+# ==========================================================
+
+if search:
+    searchable = register[["EmpCode", "Name", "Department", "Designation"]].astype(str)
+
+    mask = (
+        searchable["EmpCode"].str.contains(search, case=False, na=False)
+        | searchable["Name"].str.contains(search, case=False, na=False)
+        | searchable["Department"].str.contains(search, case=False, na=False)
+        | searchable["Designation"].str.contains(search, case=False, na=False)
+    )
+
+    register = register.loc[mask]
+
+# ==========================================================
+# REGISTER TABLE
+# ==========================================================
+
+display_columns = []
+
+if show_company_column():
+    display_columns.append("Company")
+
+display_columns.extend(
+    [
+        "EmpCode",
+        "Name",
+        "Department",
+        "Designation",
+        "Present",
+        "Absent",
+        "Leave",
+        "PaidDays",
+        "WorkHrs",
+        "OvTim",
+    ]
+)
+
+st.caption(
+    f"""
+Displaying {len(register):,} monthly records
+
+Employees : {register["EmpCode"].nunique()}
+
+Departments : {register["Department"].nunique()}
+"""
+)
+
+st.dataframe(register[display_columns], width="stretch", hide_index=True, height=450)
+
+st.divider()
+
+# ==========================================================
+# EXPORT REPORTS
+# ==========================================================
+
+st.markdown("## 📥 Export Reports")
+
+st.caption("Download the filtered analytics register.")
+
+csv_data = dataframe_to_csv(register)
+
+excel_data = dataframe_to_excel(register)
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.download_button(
+        "⬇ Download CSV",
+        csv_data,
+        file_name=f"Dashboard_{selected_month}_{selected_year}.csv",
+        mime="text/csv",
+        width="stretch",
+    )
+
+with col2:
+    st.download_button(
+        "📥 Download Excel",
+        excel_data,
+        file_name=f"Dashboard_{selected_month}_{selected_year}.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        width="stretch",
+    )
+
+st.divider()
 
 st.markdown("---")
 
 st.caption(
     f"""
 Dashboard Version : 2.0
-
-Employees Displayed : {metrics["employees"]}
-
-Departments : {filtered["Department"].nunique()}
 
 Generated from processed attendance data.
 
