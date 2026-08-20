@@ -9,7 +9,6 @@ from utils.export import (dataframe_to_csv, dataframe_to_excel)
 from utils.company_ui import is_global_user, show_company_column
 from utils.charts.employee import employee_history_chart, employee_status_pie
 from config.company_config import company_details
-
 from auth.layout import render_header
 from auth.permissions import require_login
 

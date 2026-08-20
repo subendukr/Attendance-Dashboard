@@ -6,17 +6,13 @@ from auth.permissions import require_login
 from services.attendance_service import attendance_service
 from utils.ui_filters import render_sidebar_filters
 from utils.ui_messages import show_no_data_message
-
-from utils.charts.attendance import (
-    attendance_summary_chart,
-)
+from utils.company_ui import show_company_column
+from utils.charts.attendance import attendance_summary_chart
 
 from utils.charts.department import (
     department_chart,
     department_employee_chart,
 )
-
-from utils.company_ui import show_company_column
 
 from utils.export import (
     dataframe_to_csv,
@@ -44,6 +40,7 @@ monthly = attendance_service.get_monthly_data()
     selected_company,
     selected_department,
     selected_designation,
+    
 ) = render_sidebar_filters(monthly, title="📂 Dashboard Filters")
 
 # ==========================================================

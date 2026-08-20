@@ -1,12 +1,14 @@
 Username,Password,Name,Role,Company,Active
 subendu_admin,$2b$12$LXVD//GNzAJY/iSSLjTxcu93zFq7YZX4eTCiH0ohmustOeasz5rdy,Subendu Kumar,Admin,ALL,TRUE
 pratishruti,$2b$12$4fiDNFvl.hLRMbZYPrjaEu1lJ.fX8evBbehi1qW5S0uIN2sFXD5HC,Pratishruti Nayak,HR,ALL,TRUE
-jyoti_admin,$2b$12$w6Nk500LRGOsdNhNj3Vy7OgLxSLlH7B5am3/U5PZs7m5mmKbw46yO,Jyoti Yadav,Admin,ALL,TRUE
+jyoti_admin,$2b$12$l8tDg3wFapDiOyGiJE6onuzStZyEr7z6Qnaz06e9My.4pim4OL8Ci,Jyoti Yadav,Admin,ALL,TRUE
 binay_md,$2b$12$T//HcUqUMwZU/qiubqj8C.DBFf5RYXsI6zfl68juG00fMVZBJEj7S,Binay Singh,MD,ALL,TRUE
-vivek,$2b$12$B58uevV0fQX2oHeypNfUdOhpn.oKPIuFc.NEBN80gXwmBnaOsDjee,Vivek Das,HR,ALL,TRUE
-suraj_gov,$2b$12$9sXNmLJ5SlfrObDtuK5JMOSY6AK.4HqOa/LtRMsiwDF8bNckPUb/i,Suraj Kumar,GM,GOV,TRUE
-sujit_rkl,$2b$12$2uyuFppeyBM3VmD465q2AOd8PGbhUksM0bvL4zI3BkHkX8AeconEu,Sujit kumar,GM,RKL,TRUE
-akash_kaal,$2b$12$MMUDB52KJ7gwSsGOqC1lXu49pyrhHB5TG6quz3.qp1gQO/F0sUFxq,Akash Agarwal,GM,KAAL,TRUE
-ashish_nlkl,$2b$12$TMpmdnG6iAV./T647fpp0eh72WoZfXosJyTtCwEM0UAnKKkA/vCdC,Ashish Agarwal,GM,NLKL,TRUE
-vedant_dir,$2b$12$IF3xPDklL2gddEBpsgi2AeUTtKRs5MWPsKpuMUWZILBAQdBzmUfKO,Vedant Singh,Director,ALL,TRUE
-vibhor_dir,$2b$12$tRwXj/GEgLGqSeW7e9nHLuyN9xJkjskIz4WBf..SCTdWWvEc8P8mu,Vibhor Singh,Director,ALL, TRUE
+vivek,$2b$12$nPjWWwMWlsdHDypLUGgolO7tyGgts.soWNDW/2pJcFr...GVlvRsW,Vivek Das,HR,ALL,TRUE
+suraj_gov,$2b$12$hrNzxW/lgaHYe3JODDlnne0HV7RHfD8pLp59eEH9LdB8o05y0PLJu,Suraj Kumar,GM,GOV,TRUE
+sujit_rkl,$2b$12$XixE1QQOEpe6q8FoHW706eRPAo7LGhUtyKRibsgLxjcRNZdSh0Wiu,Sujit kumar,GM,RKL,TRUE
+akash_kaal,$2b$12$m8tGeLSHrCfqlPIP4e9wq.NZm0OR/rWRb/3VvefpvpR7mwVmL0jEy,Akash Agarwal,GM,KAAL,TRUE
+ashish_nlkl,$2b$12$cEb/3372Nq6bbEiS8cDfwe/KqNCC2ftklSVDsxyTSGL3uirkiovKq,Ashish Agarwal,GM,NLKL,TRUE
+vedant_dir,$2b$12$ZMyWVGCSa0t4Blnu1CBL1uo0Mmml6Io47JjHjik0oov9xxNXUST0e,Vedant Singh,Director,ALL,TRUE
+vibhor_dir,$2b$12$6yXVkpitq2p/KZK4EhKgv.LJHj8Ug8Hq1Vxb257ZcWvyd.aGSbfuC,Vibhor Singh,Director,ALL, TRUE
+anchal_nlkl,$2b$12$zxCRdoCJNNdtsvKhth1JY.kvMT5b4EyOG.98Qwy1xG1UFTgeWYixO,Anchal Tiwari,Manager,NLKL,TRUE
+bhaskar_admin,$2b$12$KMpcGZXJsffnp7IDFfReNueNoDeBXKV6vm.FOay0cKfvrhq2wH0p2,Bhaskar Sen,Procurement,NLKL OFC,TRUE

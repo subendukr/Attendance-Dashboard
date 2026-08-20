@@ -1,27 +1,31 @@
-"""
-Company Detection
-
-Determines the company based on the uploaded
-attendance workbook filename.
-"""
-
-# ==========================================================
-# DETECT COMPANY
-# ==========================================================
-
-
 def detect_company(filename):
     """
-    Detect the company based on the uploaded filename.
+    Detect company from uploaded workbook filename.
+
+    Longer company codes are checked first so that
+    NLKL OFC is detected as NLKL OFC instead of NLKL.
     """
 
-    from config.company_config import load_companies
+    filename = str(filename).strip().upper()
 
-    filename = filename.upper()
+    # Import here to avoid circular import:
+    # repository.py -> company_detector.py -> repository.py
+    from utils.repository import load_companies
 
-    companies = load_companies()
+    data = load_companies()
 
-    for code, details in companies.items():
+    # repository.load_companies() returns the complete
+    # companies.json structure.
+    companies = data.get("companies", {})
+
+    # Check longest/specific company codes first.
+    for code, details in sorted(
+        companies.items(),
+        key=lambda item: len(str(item[0])),
+        reverse=True,
+    ):
+        code = str(code).strip().upper()
+
         if code in filename:
             return details
 
@@ -29,7 +33,6 @@ def detect_company(filename):
 
 
 def company_from_filename(filename):
-
     company = detect_company(filename)
 
     if company is None:

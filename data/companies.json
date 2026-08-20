@@ -19,6 +19,21 @@
             "code": "RKL",
             "name": "Ramkripal",
             "full_name": "Ramkripal Steels Pvt. Ltd."
+        },
+        "NLKL OFC": {
+            "code": "NLKL OFC",
+            "name": "Neelkamal Office",
+            "full_name": "Neelkamal Steels Pvt. Ltd. Office, Naryan Plaza"
+        },
+        "GOV OFC": {
+            "code": "GOV OFC",
+            "name": "Govardhan Office",
+            "full_name": "Govardhan ISPAT Office, Naryan Plaza"
+        },
+        "KAAL OFC": {
+            "code": "KAAL OFC",
+            "name": "Kalindi Office",
+            "full_name": "Kalindi Ventures Office, Naryan Plaza"
         }
     }
 }

@@ -40,5 +40,12 @@
     "employee_search": true,
     "upload": false,
     "repository": false
+  },
+  "Procurement": {
+    "dashboard": true,
+    "analytics": true,
+    "employee_search": true,
+    "upload": false,
+    "repository": false
   }
 }
