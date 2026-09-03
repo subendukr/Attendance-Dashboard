@@ -495,6 +495,85 @@ class AttendanceRepository:
 
         logger.info("EmployeeMonthly.xlsx saved")
 
+    def append_processed_data(self, new_daily, new_monthly):
+        """
+        Merge newly processed attendance data with existing
+        processed datasets and save the combined result.
+
+        Used for normal incremental uploads.
+        Full repository rebuilds continue to use save_processed_data().
+        """
+
+        # --------------------------------------------------
+        # Load existing processed data
+        # --------------------------------------------------
+
+        try:
+            existing_daily = self.load_daily()
+        except FileNotFoundError:
+            existing_daily = pd.DataFrame()
+
+        try:
+            existing_monthly = self.load_monthly()
+        except FileNotFoundError:
+            existing_monthly = pd.DataFrame()
+
+        # --------------------------------------------------
+        # Daily data
+        # --------------------------------------------------
+
+        if existing_daily.empty:
+            combined_daily = new_daily.copy()
+        elif new_daily is None or new_daily.empty:
+            combined_daily = existing_daily.copy()
+        else:
+            combined_daily = pd.concat(
+                [existing_daily, new_daily],
+                ignore_index=True
+            )
+
+        if not combined_daily.empty:
+            combined_daily = combined_daily.drop_duplicates(
+                subset=["EmpCode", "Date"]
+            )
+
+        # --------------------------------------------------
+        # Monthly data
+        # --------------------------------------------------
+
+        if existing_monthly.empty:
+            combined_monthly = new_monthly.copy()
+        elif new_monthly is None or new_monthly.empty:
+            combined_monthly = existing_monthly.copy()
+        else:
+            combined_monthly = pd.concat(
+                [existing_monthly, new_monthly],
+                ignore_index=True
+            )
+
+        if not combined_monthly.empty:
+            combined_monthly = combined_monthly.drop_duplicates(
+                subset=["EmpCode", "Year", "Month"]
+            )
+
+        # --------------------------------------------------
+        # Save combined processed data
+        # --------------------------------------------------
+
+        self.save_processed_data(
+            combined_daily,
+            combined_monthly
+        )
+
+        logger.info(
+            "Incremental processed data saved. "
+            "Daily rows: %d | Monthly rows: %d",
+            len(combined_daily),
+            len(combined_monthly)
+        )
+
+        return combined_daily, combined_monthly
+
     def processed_exists(self) -> bool:
         """
         Check whether the processed attendance datasets exist.

@@ -121,6 +121,8 @@ if uploaded_files:
 
     duplicate_files = []
 
+    new_workbook_paths = []
+
     for index, workbook in enumerate(uploaded_files, start=1):
         if workbook_exists(workbook.name):
             duplicate_files.append(workbook.name)
@@ -133,7 +135,9 @@ if uploaded_files:
         # Save workbook
         # ------------------------------------------
 
-        save_raw_workbook(workbook)
+        save_path = save_raw_workbook(workbook)
+
+        new_workbook_paths.append(save_path)
 
         # ------------------------------------------
         # Create upload metadata
@@ -175,7 +179,7 @@ if uploaded_files:
 
     invalid_files = []
 
-    for workbook in repository:
+    for workbook in new_workbook_paths:
         status, message = validate_file(workbook)
 
         if status:
