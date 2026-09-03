@@ -42,6 +42,14 @@ PAGE_CONFIG = [
         "subtitle": "Attendance Data Upload",
         "icon": "📁",
     },
+    {
+        "permission": "employee_average",
+        "path": "pages/5_Employee_Average.py",
+        "title": "Employee Average",
+        "subtitle": "Employee Average Attendance",
+        "icon": "📋",
+    },
+
 ]
 
 # ==========================================================

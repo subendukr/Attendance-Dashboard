@@ -3,6 +3,7 @@
     "dashboard": true,
     "analytics": true,
     "employee_search": true,
+    "employee_average": true,
     "upload": true,
     "repository": true
   },
@@ -10,6 +11,7 @@
     "dashboard": true,
     "analytics": true,
     "employee_search": true,
+    "employee_average": true,
     "upload": false,
     "repository": false
   },
@@ -17,6 +19,7 @@
     "dashboard": true,
     "analytics": true,
     "employee_search": true,
+    "employee_average": true,
     "upload": false,
     "repository": false
   },
@@ -24,6 +27,7 @@
     "dashboard": true,
     "analytics": true,
     "employee_search": true,
+    "employee_average": true,
     "upload": false,
     "repository": false
   },
@@ -31,6 +35,7 @@
     "dashboard": true,
     "analytics": true,
     "employee_search": true,
+    "employee_average": true,
     "upload": false,
     "repository": false
   },
@@ -38,6 +43,7 @@
     "dashboard": true,
     "analytics": true,
     "employee_search": true,
+    "employee_average": true,
     "upload": false,
     "repository": false
   },
@@ -45,6 +51,7 @@
     "dashboard": true,
     "analytics": true,
     "employee_search": true,
+    "employee_average": true,
     "upload": false,
     "repository": false
   }
