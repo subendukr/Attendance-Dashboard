@@ -34,6 +34,11 @@
             "code": "KAAL OFC",
             "name": "Kalindi Office",
             "full_name": "Kalindi Ventures Office, Naryan Plaza"
+        },
+        "BBSR PLZ": {
+            "code": "BBSR PLZ",
+            "name": "Bhubaneswar Plaza",
+            "full_name": "Bhubaneswar Plaza, 2nd & 4th Floor"
         }
     }
 }
