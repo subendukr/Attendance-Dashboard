@@ -54,5 +54,13 @@
     "employee_average": true,
     "upload": false,
     "repository": false
+  },
+  "Electrical HOD": {
+    "dashboard": true,
+    "analytics": true,
+    "employee_search": true,
+    "employee_average": true,
+    "upload": false,
+    "repository": false
   }
 }

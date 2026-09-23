@@ -4,19 +4,14 @@ Application Layout
 Shared layout components used across the
 Attendance Dashboard.
 """
-
 from datetime import datetime
-
 import streamlit as st
-
+from auth.permissions import can
 from auth.session import current_name, current_role, current_company, logout
-
 from config.company_config import company_details
-
 # ==========================================================
 # USER INITIALS
 # ==========================================================
-
 
 def get_initials():
     """
@@ -75,9 +70,31 @@ def current_company_name():
 # ==========================================================
 # HEADER
 # ==========================================================
+def get_display_title(default_title):
+    """
+    Return the appropriate application title for the
+    currently authenticated user.
+    """
 
+    # Users with Upload or Repository access
+    # are treated as global users.
+    if can("upload") or can("repository"):
+        return default_title
+
+    # Company-restricted users see their own company name.
+    company_code = current_company()
+
+    if company_code:
+        details = company_details(company_code)
+
+        if details:
+            return details.get("full_name", default_title)
+
+    return default_title
 
 def render_header(title: str, subtitle: str):
+    
+    title = get_display_title(title)
     """
     Render executive user card.
     """
