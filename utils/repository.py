@@ -704,15 +704,14 @@ class AttendanceRepository:
 
     def delete_workbook(self, filename: str):
         """
-        Delete a workbook from the repository.
+        Delete a workbook from the repository and rebuild
+        processed attendance data from the remaining workbooks.
         """
 
         relative_path = f"{self.RAW_FOLDER}/{filename}"
 
         if not self.storage.exists(relative_path):
-
             logger.warning("Workbook not found: %s", filename)
-
             return (False, "Workbook does not exist.")
 
         try:
@@ -726,15 +725,30 @@ class AttendanceRepository:
             logger.info("Deleted workbook %s", filename)
 
             # ------------------------------------------
-            # If no raw workbooks remain,
-            # remove processed datasets.
+            # Remove workbook from upload history
+            # ------------------------------------------
+
+            self.remove_metadata(filename)
+
+            # ------------------------------------------
+            # Rebuild processed datasets
+            # from remaining raw workbooks
             # ------------------------------------------
 
             remaining_workbooks = self.list_repository()
 
-            if not remaining_workbooks:
+            if remaining_workbooks:
+                logger.info(
+                    "Rebuilding processed data from %d remaining workbook(s).",
+                    len(remaining_workbooks)
+                )
 
-                logger.info("Repository is empty. Clearing processed datasets.")
+                self.rebuild_repository()
+
+            else:
+                logger.info(
+                    "Repository is empty. Clearing processed datasets."
+                )
 
                 self.clear_processed_data()
 
@@ -742,7 +756,10 @@ class AttendanceRepository:
 
         except Exception as exc:
 
-            logger.exception("Unable to delete workbook %s", filename)
+            logger.exception(
+                "Unable to delete workbook %s",
+                filename
+            )
 
             return (False, str(exc))
 

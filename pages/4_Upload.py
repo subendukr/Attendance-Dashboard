@@ -404,6 +404,8 @@ if repository:
 
                 if success:
                     remove_metadata(workbook.name)
+                    with st.spinner("Updating attendance data..."):
+                        upload_service.rebuild_repository()
 
                     st.success(message)
 
