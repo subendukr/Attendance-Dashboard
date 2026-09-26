@@ -228,13 +228,17 @@ def is_valid_sheet(df):
 # ==========================================================
 
 
-def extract_daily(filepath):
+def extract_daily(filepath, xls=None):
     """
     Extract employee-wise daily attendance
     from every worksheet in the workbook.
+
+    The Excel workbook can be supplied by the caller
+    so the same downloaded workbook can be reused.
     """
 
-    xls = open_workbook(filepath)
+    if xls is None:
+        xls = open_workbook(filepath)
 
     print("\n" + "=" * 70)
     print("Workbook contains the following sheets:")
@@ -258,7 +262,7 @@ def extract_daily(filepath):
         print("=" * 60)
 
         try:
-            df = read_workbook(filepath, sheet_name=sheet, header=None)
+            df = xls.parse(sheet_name=sheet, header=None)
 
             # ---------------------------------------------
             # Debug Information
@@ -374,20 +378,27 @@ def extract_daily(filepath):
 # ==========================================================
 
 
-def extract_monthly(filepath):
+def extract_monthly(filepath, xls=None):
     """
     Extract employee-wise monthly attendance
     summary from every worksheet.
+
+    The Excel workbook can be supplied by the caller
+    so the same downloaded workbook can be reused.
     """
 
-    xls = open_workbook(filepath)
+    if xls is None:
+        xls = open_workbook(filepath)
 
     records = []
 
     for sheet in xls.sheet_names:
         print(f"Processing sheet : {sheet}")
 
-        df = read_workbook(filepath, sheet_name=sheet, header=None)
+        df = xls.parse(
+            sheet_name=sheet,
+            header=None
+        )
 
         # ---------------------------------------------
         # Skip invalid sheets
@@ -500,12 +511,17 @@ def process_report(filepath, save=True):
         raise ValueError(f"Unable to detect company from {getattr(filepath, 'name', filepath)}")
 
     # --------------------------------------------------
+    # OPEN WORKBOOK ONCE
+    # --------------------------------------------------
+
+    xls = open_workbook(filepath)
+    # --------------------------------------------------
     # DAILY
     # --------------------------------------------------
 
     print("Extracting Daily Attendance...")
 
-    daily = extract_daily(filepath)
+    daily = extract_daily(filepath, xls=xls)
 
     if not daily.empty:
         daily.insert(0, "Company", company["code"])
@@ -520,7 +536,7 @@ def process_report(filepath, save=True):
 
     print("Extracting Monthly Attendance...")
 
-    monthly = extract_monthly(filepath)
+    monthly = extract_monthly(filepath, xls=xls)
 
     if not monthly.empty:
         monthly.insert(0, "Company", company["code"])

@@ -561,31 +561,35 @@ class SupabaseStorage(StorageAdapter):
             logger.exception("Unable to initialize bucket.")
             return False
 
-    def exists(
-        self,
-        relative_path,
-    ):
+    def exists(self, relative_path):
+        """
+        Check whether a Supabase Storage object exists.
+
+        Uses Supabase's server-side filename search instead of
+        listing every object in the directory.
+        """
+
         parent = Path(relative_path).parent
         filename = Path(relative_path).name
 
         if str(parent) == ".":
             parent = ""
 
-        files = self.list_files(parent)
+        try:
+            response = self._storage().list(
+                path=str(parent),
+                options={"search": filename, "limit": 1},
+            )
 
-        # ---------- TEMPORARY DEBUG ----------
-        logger.info(
-            "Checking %s in '%s' -> %s",
-            filename,
-            parent,
-            [f.name for f in files],
-        )
-    # -------------------------------------
+            return any(
+                item.get("name") == filename
+                for item in response
+                if isinstance(item, dict)
+            )
 
-        return any(
-            f.name == filename
-            for f in files
-        )
+        except Exception:
+            logger.exception("Failed to check object existence: %s", relative_path)
+            return False
     
     def last_modified(self, relative_path):
         """

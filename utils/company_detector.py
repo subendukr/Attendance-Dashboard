@@ -1,3 +1,5 @@
+import streamlit as st
+
 def detect_company(filename):
     """
     Detect company from uploaded workbook filename.
@@ -12,7 +14,11 @@ def detect_company(filename):
     # repository.py -> company_detector.py -> repository.py
     from utils.repository import load_companies
 
-    data = load_companies()
+    @st.cache_data(ttl=3600)
+    def _load_companies_cached():
+        return load_companies()
+
+    data = _load_companies_cached()
 
     # repository.load_companies() returns the complete
     # companies.json structure.
